@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InteractiveChecker from '../components/InteractiveChecker.astro';
+---
+
+<Layout 
+  title="SMS Scam Checker - Phishing Text Scanner - TrustChecker"
+  description="Identify package delivery frauds (USPS/FedEx), banking security alarms, and prize shortlink tricks inside text messages. Scan text messages for free."
+  activePath="/sms-scam-checker"
+>
+  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+    <!-- Header -->
+    <header class="text-center flex flex-col items-center gap-4 select-none">
+      <span class="caption-mono text-link font-semibold">SMISHING ANALYSIS</span>
+      <h1 class="display-lg text-ink font-semibold">SMS scam checker.</h1>
+      <p class="text-sm text-body max-w-lg">
+        Determine if a text message is a phishing attempt. Paste package tracking messages, bank notifications, or crypto links below to check credibility.
+      </p>
+    </header>
+
+    <!-- Checker Dashboard -->
+    <InteractiveChecker defaultTab="sms" />
+
+    <!-- Educational section -->
+    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
+      <h2 class="display-sm text-ink">Spotting common SMS text scams.</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-body leading-relaxed">
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">1. Package Delivery Redirection (USPS/FedEx)</span>
+          <p>
+            Scammers send messages claiming "Your package cannot be delivered due to an incorrect house number. Please update details at this link." The shortlink goes to a clone site that asks for custom fees ($1.50) to steel credit card info.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">2. Fake Bank Security Suspensions</span>
+          <p>
+            Alerts stating "Chase Alert: Suspicious transaction detected. Account locked. Confirm identity immediately" contain links to credential-harvesting pages. Bank companies never send alerts from personal 10-digit mobile lines.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">3. Obscured URL Shortlinks</span>
+          <p>
+            Phishing links frequently use custom redirects (like `tinyurl.com/`, `bit.ly/`, or random names like `usps-redelivery-postal.xyz`) instead of the official company domains. Never tap a shortened link.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">4. Unsolicited Sweepstakes & Refunds</span>
+          <p>
+            Messages claiming you have won a $500 Walmart gift card or are owed a refund from your utility provider are bait. Legitimate payouts are never delivered via unsolicited mobile text links.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

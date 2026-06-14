@@ -1,0 +1,137 @@
+---
+---
+<div class="w-full bg-canvas border border-hairline rounded-lg p-6 shadow-level2" id="history-container">
+  <div class="flex items-center justify-between border-b border-hairline pb-4 mb-4 select-none">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-success"></span>
+      <h3 class="text-sm font-semibold tracking-tight text-ink">Recent Verification History</h3>
+    </div>
+    <button id="btn-clear-history" class="text-[11px] font-mono text-mute hover:text-ink transition-colors cursor-pointer">
+      CLEAR HISTORY
+    </button>
+  </div>
+
+  <!-- History Items List -->
+  <div id="history-list" class="flex flex-col gap-3">
+    <!-- Populated via Javascript -->
+  </div>
+
+  <!-- Empty State (Hidden if history exists) -->
+  <div id="history-empty" class="hidden flex-col items-center justify-center text-center py-8 px-4 bg-canvas-soft-2/50 border border-dashed border-hairline rounded-md">
+    <svg class="w-8 h-8 text-mute mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    </svg>
+    <span class="text-xs font-semibold text-body">No recent checks found</span>
+    <span class="text-[10px] text-mute mt-1">Your recent URL, email, and SMS scans will appear here.</span>
+  </div>
+</div>
+
+<script>
+  // Dynamic hydration of history log list in client browser
+  function renderHistory() {
+    const listEl = document.getElementById('history-list');
+    const emptyEl = document.getElementById('history-empty');
+    if (!listEl || !emptyEl) return;
+
+    try {
+      const history = JSON.parse(localStorage.getItem('trustchecker_history') || '[]');
+
+      if (history.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        emptyEl.classList.add('flex');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      emptyEl.classList.remove('flex');
+
+      const typeIcons: Record<string, string> = {
+        'website': '🌐',
+        'store': '🛒',
+        'job': '💼',
+        'email': '✉️',
+        'sms': '💬',
+        'phone': '📞'
+      };
+
+      listEl.innerHTML = history.map((item: any) => {
+        let scoreColor = 'text-success bg-success/5 border-success/20';
+        if (item.score < 50) scoreColor = 'text-error bg-error/5 border-error/20';
+        else if (item.score < 80) scoreColor = 'text-warning bg-warning/5 border-warning/20';
+
+        const icon = typeIcons[item.type] || '🔍';
+
+        return `
+          <div class="flex items-center justify-between p-3 bg-canvas-soft-2 hover:bg-canvas-soft-2/80 border border-hairline rounded transition-colors group select-none">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <span class="text-base flex-shrink-0">${icon}</span>
+              <div class="flex flex-col overflow-hidden">
+                <span class="text-xs font-medium text-ink truncate font-mono max-w-[150px] sm:max-w-[300px]">${item.value}</span>
+                <span class="text-[9px] text-mute font-mono mt-0.5">${item.timestamp}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <!-- Score Badge -->
+              <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border ${scoreColor}">
+                ${item.score}
+              </span>
+              <!-- Rerun button -->
+              <button 
+                data-val="${item.value}" 
+                data-type="${item.type}" 
+                class="rerun-history-btn opacity-0 group-hover:opacity-100 hover:text-ink text-mute text-xs font-mono transition-opacity cursor-pointer px-1"
+                title="Re-run verification check"
+              >
+                RE-RUN
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click listener to re-run buttons
+      const rerunBtns = listEl.querySelectorAll('.rerun-history-btn');
+      rerunBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const val = btn.getAttribute('data-val');
+          const type = btn.getAttribute('data-type');
+          if (!val || !type) return;
+
+          // Dispatch event to main form dashboard
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.set('type', type);
+          urlParams.set('val', val);
+          window.location.search = urlParams.toString();
+        });
+      });
+
+    } catch (e) {
+      console.error('Error rendering history list: ', e);
+    }
+  }
+
+  function init() {
+    renderHistory();
+    
+    // Listen for custom trigger updates
+    window.addEventListener('trustchecker_history_updated', renderHistory);
+
+    // Clear history button
+    const clearBtn = document.getElementById('btn-clear-history');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your local scan history?')) {
+          localStorage.removeItem('trustchecker_history');
+          renderHistory();
+        }
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

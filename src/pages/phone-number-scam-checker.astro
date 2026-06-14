@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InteractiveChecker from '../components/InteractiveChecker.astro';
+---
+
+<Layout 
+  title="Phone Number Scam Checker - Telemarketer Registry - TrustChecker"
+  description="Search suspicious phone numbers in public robocall databases and community spam reports. Audit caller ID credibility instantly."
+  activePath="/phone-number-scam-checker"
+>
+  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+    <!-- Header -->
+    <header class="text-center flex flex-col items-center gap-4 select-none">
+      <span class="caption-mono text-link font-semibold">CALLER IDENTITY</span>
+      <h1 class="display-lg text-ink font-semibold">Phone number scam checker.</h1>
+      <p class="text-sm text-body max-w-lg">
+        Scan unknown or suspicious caller numbers against global consumer call registries, telemarketer logs, and spoofing signatures.
+      </p>
+    </header>
+
+    <!-- Checker Dashboard -->
+    <InteractiveChecker defaultTab="phone" />
+
+    <!-- Educational section -->
+    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
+      <h2 class="display-sm text-ink">Understanding phone fraud and spoofing.</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-body leading-relaxed">
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">1. Caller ID Spoofing Tactics</span>
+          <p>
+            Scammers use VoIP software to falsify the number appearing on your screen (caller ID spoofing). They can easily mimic local area codes or the official telephone numbers of government agencies like the IRS or bank support desks.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">2. The "IRS or Utility" Payment Scam</span>
+          <p>
+            Automated robocallers claim you owe immediate funds for unpaid taxes or overdue electricity bills, demanding payment via gift cards, wire transfers, or cryptocurrency. Government and utility companies will never request payment through these mediums.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">3. Ring and Run / Wangiri Attacks</span>
+          <p>
+            A high-risk number rings once and disconnects. If you dial back, you are connected to a high-rate premium number located offshore, resulting in substantial international tariffs charged to your mobile account billing.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">4. How to Verify a Caller</span>
+          <p>
+            If a caller claims to represent your bank or a credit card company, hang up. Locate the official phone number listed on the physical back of your plastic credit card and call that number directly.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

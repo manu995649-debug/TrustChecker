@@ -1,0 +1,132 @@
+---
+interface Props {
+  score?: number;
+  id?: string;
+  size?: number;
+}
+
+const { score = 85, id = "trust-score-dial", size = 160 } = Astro.props;
+
+// Radial calculations
+const radius = 70;
+const strokeWidth = 10;
+const circumference = 2 * Math.PI * radius;
+const strokeDashoffset = circumference - (score / 100) * circumference;
+
+// Safety color category helper
+const getSafetyColor = (val: number) => {
+  if (val >= 80) return { text: 'text-success', border: 'stroke-success', label: 'SECURE', bg: 'bg-success/5' };
+  if (val >= 50) return { text: 'text-warning', border: 'stroke-warning', label: 'WARNING', bg: 'bg-warning/5' };
+  return { text: 'text-error', border: 'stroke-error', label: 'DANGEROUS', bg: 'bg-error/5' };
+};
+
+const safety = getSafetyColor(score);
+---
+<div class="flex flex-col items-center justify-center select-none" id={`${id}-container`}>
+  <div class="relative flex items-center justify-center" style={`width: ${size}px; height: ${size}px;`}>
+    <!-- Outer Glow -->
+    <div class={`absolute inset-0 rounded-full blur-xl opacity-20 transition-all duration-700 dial-glow ${safety.bg}`}></div>
+    
+    <!-- SVG Dial -->
+    <svg class="w-full h-full -rotate-90" viewBox="0 0 160 160">
+      <!-- Background track -->
+      <circle 
+        cx="80" 
+        cy="80" 
+        r={radius} 
+        fill="transparent" 
+        stroke="var(--color-hairline)" 
+        stroke-width={strokeWidth}
+      />
+      <!-- Foreground progress indicator -->
+      <circle 
+        cx="80" 
+        cy="80" 
+        r={radius} 
+        fill="transparent" 
+        stroke="currentColor" 
+        stroke-width={strokeWidth}
+        stroke-dasharray={circumference}
+        stroke-dashoffset={strokeDashoffset}
+        stroke-linecap="round"
+        class={`transition-all duration-1000 ease-out dial-ring ${safety.text}`}
+        id={`${id}-ring`}
+      />
+    </svg>
+
+    <!-- Score Center Info -->
+    <div class="absolute flex flex-col items-center justify-center text-center">
+      <span class="text-4xl font-semibold tracking-tight text-ink font-sans transition-all duration-700" id={`${id}-value`}>
+        {score}
+      </span>
+      <span class="text-[9px] font-mono tracking-widest text-mute mt-0.5">SCORE</span>
+    </div>
+  </div>
+
+  <!-- Safety Label Badge -->
+  <div class={`mt-4 px-3 py-1 rounded-full text-[10px] font-mono font-semibold tracking-widest border transition-all duration-500 dial-badge ${safety.text} ${safety.bg}`} style="border-color: currentColor;" id={`${id}-badge`}>
+    {safety.label}
+  </div>
+</div>
+
+<script is:inline define:vars={{ circumference, radius }}>
+  // Export helper functions to window for dynamic updates by the Interactive Checker
+  window.updateTrustScoreDial = function(elementId, newScore) {
+    const container = document.getElementById(`${elementId}-container`);
+    const ring = document.getElementById(`${elementId}-ring`);
+    const valueText = document.getElementById(`${elementId}-value`);
+    const badge = document.getElementById(`${elementId}-badge`);
+
+    if (!ring || !valueText || !badge) return;
+
+    // Constrain score
+    const scoreVal = Math.max(0, Math.min(100, Math.round(newScore)));
+    
+    // Animate ring
+    const dashoffset = circumference - (scoreVal / 100) * circumference;
+    ring.setAttribute('stroke-dashoffset', dashoffset.toString());
+
+    // Update value text
+    valueText.textContent = scoreVal.toString();
+
+    // Determine colors & label
+    let colorClass = '';
+    let removeClasses = ['text-success', 'text-warning', 'text-error'];
+    let removeBgClasses = ['bg-success/5', 'bg-warning/5', 'bg-error/5'];
+    let bgClass = '';
+    let label = '';
+
+    if (scoreVal >= 80) {
+      colorClass = 'text-success';
+      bgClass = 'bg-success/5';
+      label = 'SECURE';
+    } else if (scoreVal >= 50) {
+      colorClass = 'text-warning';
+      bgClass = 'bg-warning/5';
+      label = 'WARNING';
+    } else {
+      colorClass = 'text-error';
+      bgClass = 'bg-error/5';
+      label = 'DANGEROUS';
+    }
+
+    // Apply classes to ring
+    removeClasses.forEach(c => ring.classList.remove(c));
+    ring.classList.add(colorClass);
+
+    // Apply classes to badge
+    removeClasses.forEach(c => badge.classList.remove(c));
+    removeBgClasses.forEach(c => badge.classList.remove(c));
+    badge.classList.add(colorClass, bgClass);
+    badge.textContent = label;
+
+    // Apply class to outer glow
+    if (container) {
+      const glow = container.querySelector('.dial-glow');
+      if (glow) {
+        removeBgClasses.forEach(c => glow.classList.remove(c));
+        glow.classList.add(bgClass);
+      }
+    }
+  };
+</script>

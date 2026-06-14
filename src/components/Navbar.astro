@@ -1,0 +1,117 @@
+---
+const { activePath = '/' } = Astro.props;
+---
+<header class="sticky top-0 z-50 w-full h-16 bg-canvas/80 backdrop-blur-md border-b border-hairline flex items-center justify-between px-6 md:px-12 select-none">
+  <div class="flex items-center gap-8">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 group">
+      <svg class="w-6 h-6 text-primary transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L3 7V12C3 17.5 7 21.8 12 23C17 21.8 21 17.5 21 12V7L12 2Z" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M9 11.5L11 13.5L15 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="text-base font-semibold tracking-tight text-ink">TrustChecker<span class="text-link">.</span></span>
+    </a>
+
+    <!-- Nav Links (Desktop) -->
+    <nav class="hidden md:flex items-center gap-1">
+      <a href="/website-scam-checker" class={`text-sm px-3 py-1.5 rounded-full transition-colors ${activePath === '/website-scam-checker' ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body hover:text-ink hover:bg-canvas-soft-2/50'}`}>
+        Websites
+      </a>
+      <a href="/fake-job-offer-checker" class={`text-sm px-3 py-1.5 rounded-full transition-colors ${activePath === '/fake-job-offer-checker' ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body hover:text-ink hover:bg-canvas-soft-2/50'}`}>
+        Jobs
+      </a>
+      <a href="/phishing-email-checker" class={`text-sm px-3 py-1.5 rounded-full transition-colors ${activePath === '/phishing-email-checker' ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body hover:text-ink hover:bg-canvas-soft-2/50'}`}>
+        Emails
+      </a>
+      <a href="/sms-scam-checker" class={`text-sm px-3 py-1.5 rounded-full transition-colors ${activePath === '/sms-scam-checker' ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body hover:text-ink hover:bg-canvas-soft-2/50'}`}>
+        SMS
+      </a>
+      <a href="/phone-number-scam-checker" class={`text-sm px-3 py-1.5 rounded-full transition-colors ${activePath === '/phone-number-scam-checker' ? 'text-ink font-medium bg-canvas-soft-2' : 'text-body hover:text-ink hover:bg-canvas-soft-2/50'}`}>
+        Phone
+      </a>
+    </nav>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle-btn" class="h-7 w-7 flex items-center justify-center border border-hairline rounded bg-canvas text-body hover:text-ink hover:bg-canvas-soft transition-colors cursor-pointer" aria-label="Toggle Theme">
+      <!-- Moon SVG (visible in light mode) -->
+      <svg class="w-3.5 h-3.5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+      </svg>
+      <!-- Sun SVG (visible in dark mode) -->
+      <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+    </button>
+
+    <!-- CTAs -->
+    <a href="/scam-detector" class="hidden sm:inline-flex h-7 px-3 items-center justify-center border border-hairline text-xs font-medium rounded bg-canvas text-ink hover:bg-canvas-soft transition-colors">
+      Live Dashboard
+    </a>
+    <a href="#analyze-form" class="h-7 px-3 inline-flex items-center justify-center text-xs font-semibold rounded bg-primary text-on-primary hover:bg-primary/90 transition-all shadow-sm">
+      Analyze Now
+    </a>
+
+    <!-- Hamburger Menu (Mobile) -->
+    <button id="mobile-menu-btn" class="md:hidden p-1.5 text-body hover:text-ink hover:bg-canvas-soft-2 rounded-md transition-colors" aria-label="Toggle Menu">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobile-menu" class="absolute top-16 left-0 w-full bg-canvas border-b border-hairline shadow-lg hidden flex-col p-4 md:hidden z-40 transition-all duration-300">
+    <div class="flex flex-col gap-2">
+      <a href="/website-scam-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        Website Checker
+      </a>
+      <a href="/fake-job-offer-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        Job Scam Checker
+      </a>
+      <a href="/phishing-email-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        Email Phishing Checker
+      </a>
+      <a href="/sms-scam-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        SMS Text Checker
+      </a>
+      <a href="/phone-number-scam-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        Phone Reputation Checker
+      </a>
+      <a href="/online-store-checker" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors">
+        eCommerce Store Checker
+      </a>
+      <hr class="border-hairline my-2" />
+      <a href="/scam-detector" class="text-sm px-3 py-2 rounded-md hover:bg-canvas-soft-2 font-medium text-link transition-colors">
+        Live Detector Dashboard
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+
+  if (btn && menu) {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', () => {
+      menu.classList.add('hidden');
+    });
+  }
+
+  // Theme toggle logic
+  const themeBtn = document.getElementById('theme-toggle-btn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  }
+</script>

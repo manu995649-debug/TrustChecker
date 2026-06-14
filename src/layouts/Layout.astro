@@ -1,0 +1,83 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	activePath?: string;
+}
+
+const { 
+	title = 'TrustChecker - AI Scam Detector & Website Legitimacy Checker',
+	description = 'Determine instantly whether a website, email, text message, phone number, online store, or job offer is legitimate or a scam. Enter content for a real-time AI trust score.',
+	activePath = '/' 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+	<head>
+		<script is:inline>
+			const theme = (() => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light';
+			})();
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		</script>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="author" content="TrustChecker" />
+		<meta name="robots" content="index, follow" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content="https://trustchecker.com" />
+		<meta property="og:site_name" content="TrustChecker" />
+		
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+		
+		<meta name="generator" content={Astro.generator} />
+	</head>
+	<body class="flex flex-col min-h-screen bg-canvas-soft text-ink relative">
+		<!-- Mesh gradient decoration -->
+		<div class="mesh-gradient-bg"></div>
+
+		<!-- Top Header -->
+		<Navbar activePath={activePath} />
+
+		<!-- Main Layout Body -->
+		<main class="flex-grow relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+			<slot />
+		</main>
+
+		<!-- Footer -->
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InteractiveChecker from '../components/InteractiveChecker.astro';
+---
+
+<Layout 
+  title="Fake Job Offer Checker - Employment Scam Detection - TrustChecker"
+  description="Audit job postings, recruiter emails, and messaging transcripts for employment scams, fake equipment fees, and money laundering checks. Verify before signing."
+  activePath="/fake-job-offer-checker"
+>
+  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+    <!-- Header -->
+    <header class="text-center flex flex-col items-center gap-4 select-none">
+      <span class="caption-mono text-link font-semibold">RECRUITMENT AUDIT</span>
+      <h1 class="display-lg text-ink font-semibold">Fake job offer checker.</h1>
+      <p class="text-sm text-body max-w-lg">
+        Scan job description text, offer letters, or chat logs with recruiters to detect fraudulent job offers.
+      </p>
+    </header>
+
+    <!-- Checker Dashboard -->
+    <InteractiveChecker defaultTab="job" />
+
+    <!-- Educational section -->
+    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
+      <h2 class="display-sm text-ink">Red flags in remote employment offers.</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-body leading-relaxed">
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-error">1. Equipments & Check Scam</span>
+          <p>
+            The recruiter promises to send a check for you to purchase a laptop, software, or training tools from a "certified vendor" with a rebate. The check eventually bounces, leaving you liable for thousands of dollars.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-error">2. Anonymous Messaging Redirects</span>
+          <p>
+            Scammers avoid interviews or phone calls, insisting on conducting conversations and onboarding entirely through Telegram, WhatsApp, or Signal.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-error">3. Unrealistic Pay Scales</span>
+          <p>
+            Offers boasting $60+/hour for simple data entry or package scanning tasks that require no interview or experience are bait for money-laundering mule rings.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

@@ -1,0 +1,154 @@
+---
+import TrustScoreDial from './TrustScoreDial.astro';
+
+interface Props {
+  id?: string;
+  className?: string;
+}
+
+const { id = "analysis-report", className = "hidden" } = Astro.props;
+---
+<div id={id} class={`w-full bg-canvas border border-hairline rounded-lg p-6 md:p-8 shadow-level3 relative overflow-hidden transition-all duration-500 ${className}`}>
+  <!-- Vercel accent atmospheric light inside the card -->
+  <div class="absolute top-0 right-0 w-64 h-64 bg-link/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
+
+  <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+    <!-- Left Column: Metrics and Visualizers -->
+    <div class="w-full lg:w-5/12 flex flex-col gap-6">
+      <div class="flex flex-col items-center border-b border-hairline pb-6">
+        <h3 class="text-xs font-mono tracking-widest text-mute mb-4 uppercase">AI RISK ASSESSMENT</h3>
+        <!-- Reuse the TrustScoreDial -->
+        <TrustScoreDial id="report-dial" score={0} size={150} />
+      </div>
+
+      <!-- Domain Age Timeline Visualizer -->
+      <div class="flex flex-col gap-3" id="timeline-container">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-body font-mono">DOMAIN / ENTITY AGE</span>
+          <span class="text-ink font-semibold font-mono" id="report-age-text">Unknown</span>
+        </div>
+        <div class="relative w-full h-2 bg-canvas-soft-2 border border-hairline rounded-full overflow-hidden">
+          <div id="timeline-bar" class="absolute top-0 left-0 h-full w-0 bg-success transition-all duration-1000 ease-out"></div>
+        </div>
+        <div class="flex justify-between text-[10px] font-mono text-mute">
+          <span>Fresh (0 days)</span>
+          <span>1 Year</span>
+          <span>5+ Years</span>
+        </div>
+      </div>
+
+      <!-- Website Screenshot Mockup / Entity Card -->
+      <div class="flex flex-col gap-3" id="screenshot-container">
+        <span class="text-xs font-mono text-body">PREVIEW MOCKUP</span>
+        <div class="w-full aspect-video bg-canvas-soft-2 border border-hairline rounded-md overflow-hidden relative flex flex-col shadow-level1">
+          <!-- Browser Header Bar -->
+          <div class="h-6 bg-canvas border-b border-hairline px-3 flex items-center gap-1.5 select-none">
+            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+            <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+            <span class="w-2 h-2 rounded-full bg-green-400"></span>
+            <div class="h-4 flex-grow bg-canvas-soft border border-hairline rounded text-[8px] text-mute flex items-center justify-center font-mono overflow-hidden mx-4 px-2" id="report-browser-url">
+              loading...
+            </div>
+          </div>
+          <!-- Browser Content -->
+          <div class="flex-grow flex items-center justify-center p-4 relative bg-canvas">
+            <div class="text-center flex flex-col items-center gap-2">
+              <svg class="w-12 h-12 text-mute animate-pulse-slow" id="preview-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
+              </svg>
+              <span class="text-xs font-semibold text-body" id="preview-title">Analyzing content...</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-canvas via-transparent to-transparent opacity-60"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Explanations and Factor Lists -->
+    <div class="w-full lg:w-7/12 flex flex-col gap-6">
+      <div class="flex flex-col gap-2">
+        <h4 class="text-lg font-semibold tracking-tight text-ink" id="report-title-main">Scam Report Summary</h4>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-xs font-mono text-mute" id="report-timestamp">Scan performed just now</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+          <span class="text-[10px] font-mono text-success font-semibold tracking-wider">AI DIAGNOSIS SYSTEM v4</span>
+        </div>
+      </div>
+
+      <!-- Plain English AI Explanation -->
+      <div class="bg-canvas-soft-2 border border-hairline rounded-md p-4 flex flex-col gap-2 relative">
+        <span class="text-[10px] font-mono font-semibold tracking-widest text-mute">AI EXPLANATION</span>
+        <p class="text-sm text-body leading-relaxed" id="report-ai-explanation">
+          Analyzing the submitted content. Please wait...
+        </p>
+      </div>
+
+      <!-- Red Flags (Risk Factors) & Green Flags (Trust Signals) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+        <!-- Red Flags -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2 text-error font-semibold text-xs font-mono">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>RED FLAGS (RISK FACTORS)</span>
+          </div>
+          <ul class="flex flex-col gap-2 text-xs text-body" id="report-red-flags">
+            <!-- Populated via Javascript -->
+          </ul>
+        </div>
+
+        <!-- Green Flags -->
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-2 text-success font-semibold text-xs font-mono">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>GREEN FLAGS (TRUST SIGNALS)</span>
+          </div>
+          <ul class="flex flex-col gap-2 text-xs text-body" id="report-green-flags">
+            <!-- Populated via Javascript -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="border-t border-hairline pt-6 flex flex-wrap items-center justify-between gap-4 mt-auto">
+        <button id="report-share-btn" class="h-9 px-4 inline-flex items-center justify-center gap-2 border border-hairline hover:bg-canvas-soft rounded-full text-xs font-medium text-ink transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l4.838-2.42m0 7.356l-4.838-2.42m5.602-5.96a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0zm-12 4a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Share Report
+        </button>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-success"></span>
+          <span class="text-xs text-mute font-mono">100% Confidential Scan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Setup share button click
+  const shareBtn = document.getElementById('report-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const shareUrl = window.location.href.split('?')[0] + '?scan=' + encodeURIComponent(window.lastScanValue || 'report');
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        const originalText = shareBtn.innerHTML;
+        shareBtn.innerHTML = `
+          <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          Copied Link!
+        `;
+        setTimeout(() => {
+          shareBtn.innerHTML = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    });
+  }
+</script>

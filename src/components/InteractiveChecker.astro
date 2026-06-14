@@ -1,0 +1,332 @@
+---
+import AnalysisCard from './AnalysisCard.astro';
+
+interface Props {
+  defaultTab?: 'url' | 'job' | 'email' | 'sms' | 'phone' | 'store';
+  prefilledValue?: string;
+}
+
+const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
+---
+<div class="w-full flex flex-col gap-6" id="checker-dashboard">
+  <!-- Tabs Navigation -->
+  <div class="w-full flex overflow-x-auto border-b border-hairline scrollbar-none select-none">
+    <div class="flex gap-2 min-w-max pb-3">
+      <button data-tab="url" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'url' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        🌐 Website Checker
+      </button>
+      <button data-tab="job" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'job' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        💼 Job Offer
+      </button>
+      <button data-tab="email" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'email' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        ✉️ Email Scan
+      </button>
+      <button data-tab="sms" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'sms' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        💬 SMS/Texts
+      </button>
+      <button data-tab="phone" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'phone' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        📞 Phone Reputation
+      </button>
+      <button data-tab="store" class={`tab-btn text-sm px-4 py-2 rounded-full font-medium transition-all ${defaultTab === 'store' ? 'bg-primary text-on-primary font-semibold' : 'text-body hover:text-ink hover:bg-canvas-soft-2/60'}`}>
+        🛒 eCommerce Store
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Panels -->
+  <div class="w-full bg-canvas border border-hairline rounded-lg p-6 shadow-level2" id="analyze-form">
+    <!-- Tab 1: Website Scanner -->
+    <div id="panel-url" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'url' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-url">Website URL / Domain Name</label>
+        <span class="text-xs text-mute">Instantly analyze domain age, SSL details, registration parameters, and phishing indicators.</span>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input 
+          type="text" 
+          id="input-url" 
+          placeholder="e.g., trustchecker-verification.xyz or paypal-support-login.com" 
+          value={defaultTab === 'url' ? prefilledValue : ''}
+          autocomplete="off"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          class="flex-grow h-11 border border-hairline rounded bg-canvas px-4 text-sm focus:border-ink focus:outline-none placeholder-mute transition-colors duration-150"
+        />
+        <button id="btn-scan-url" class="h-11 px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none">
+          Analyze Website
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 text-xs items-center mt-1 select-none">
+        <span class="text-mute font-mono">Popular Tests:</span>
+        <button class="text-body hover:text-ink underline test-url-link">paypal-security-alert.xyz</button>
+        <button class="text-body hover:text-ink underline test-url-link">amazon-free-giftcard.net</button>
+        <button class="text-body hover:text-ink underline test-url-link">google.com</button>
+      </div>
+    </div>
+
+    <!-- Tab 2: Job Offer Scanner -->
+    <div id="panel-job" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'job' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-job">Job Description / Recruiter Conversation</label>
+        <span class="text-xs text-mute">Paste recruiter emails, WhatsApp/Telegram chat logs, or job postings to identify common employment fraud.</span>
+      </div>
+      <textarea 
+        id="textarea-job" 
+        rows="5"
+        placeholder="Paste job description or conversation log here..." 
+        autocomplete="off"
+        spellcheck="false"
+        class="w-full border border-hairline rounded bg-canvas p-4 text-sm focus:border-ink focus:outline-none placeholder-mute font-sans resize-y transition-colors duration-150"
+      >{defaultTab === 'job' ? prefilledValue : ''}</textarea>
+      <button id="btn-scan-job" class="h-11 w-fit px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none self-end">
+        Scan Job Offer
+      </button>
+    </div>
+
+    <!-- Tab 3: Email Scanner -->
+    <div id="panel-email" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'email' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-email">Suspicious Email Content</label>
+        <span class="text-xs text-mute">Paste the full email text or subject lines to look for social engineering, urgency red flags, and bait links.</span>
+      </div>
+      <textarea 
+        id="textarea-email" 
+        rows="5"
+        placeholder="Paste suspicious email text here..." 
+        autocomplete="off"
+        spellcheck="false"
+        class="w-full border border-hairline rounded bg-canvas p-4 text-sm focus:border-ink focus:outline-none placeholder-mute font-sans resize-y transition-colors duration-150"
+      >{defaultTab === 'email' ? prefilledValue : ''}</textarea>
+      <button id="btn-scan-email" class="h-11 w-fit px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none self-end">
+        Analyze Email
+      </button>
+    </div>
+
+    <!-- Tab 4: SMS Scanner -->
+    <div id="panel-sms" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'sms' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-sms">Text Message Content</label>
+        <span class="text-xs text-mute">Paste SMS or text alerts regarding package delivery, bank suspensions, or sweepstakes prizes.</span>
+      </div>
+      <textarea 
+        id="textarea-sms" 
+        rows="3"
+        placeholder="Paste text message content here..." 
+        autocomplete="off"
+        spellcheck="false"
+        class="w-full border border-hairline rounded bg-canvas p-4 text-sm focus:border-ink focus:outline-none placeholder-mute font-sans resize-y transition-colors duration-150"
+      >{defaultTab === 'sms' ? prefilledValue : ''}</textarea>
+      <button id="btn-scan-sms" class="h-11 w-fit px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none self-end">
+        Check SMS
+      </button>
+    </div>
+
+    <!-- Tab 5: Phone Scanner -->
+    <div id="panel-phone" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'phone' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-phone">Phone Number</label>
+        <span class="text-xs text-mute">Check community databases, reported scam logs, and caller ID spoofing indicators.</span>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input 
+          type="text" 
+          id="input-phone" 
+          placeholder="e.g., +1 800-432-1000 or (312) 555-0143" 
+          value={defaultTab === 'phone' ? prefilledValue : ''}
+          autocomplete="off"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          class="flex-grow h-11 border border-hairline rounded bg-canvas px-4 text-sm focus:border-ink focus:outline-none placeholder-mute transition-colors duration-150"
+        />
+        <button id="btn-scan-phone" class="h-11 px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none">
+          Verify Phone Number
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab 6: eCommerce Store Scanner -->
+    <div id="panel-store" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'store' ? '' : 'hidden'}`}>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-store">eCommerce Website URL</label>
+        <span class="text-xs text-mute">Check whether an online store is legitimate or a temporary fake shop selling nonexistent merchandise.</span>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input 
+          type="text" 
+          id="input-store" 
+          placeholder="e.g., super-sale-deals.online or trendy-clothing-store.shop" 
+          value={defaultTab === 'store' ? prefilledValue : ''}
+          autocomplete="off"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          class="flex-grow h-11 border border-hairline rounded bg-canvas px-4 text-sm focus:border-ink focus:outline-none placeholder-mute transition-colors duration-150"
+        />
+        <button id="btn-scan-store" class="h-11 px-6 bg-primary text-on-primary font-medium text-sm rounded hover:bg-primary/95 shadow-sm transition-colors cursor-pointer select-none">
+          Check Store
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Terminal Progress Console -->
+  <div id="scan-terminal" class="hidden w-full bg-primary border border-hairline rounded-lg p-6 font-mono text-xs text-on-primary shadow-level4 relative overflow-hidden">
+    <!-- Glowing pulse backdrop -->
+    <div class="absolute inset-0 bg-gradient-to-br from-link/10 via-transparent to-transparent opacity-50"></div>
+    <div class="relative z-10 flex flex-col gap-3">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+          <span class="text-white/60">SCANNER TERMINAL</span>
+        </div>
+        <span class="text-white/40">SYSTEM STATUS: ACTIVE</span>
+      </div>
+      
+      <!-- Scrolling Output lines -->
+      <div class="flex flex-col gap-1.5 h-48 overflow-y-auto pr-2" id="terminal-output">
+        <!-- Lines added dynamically -->
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mt-2">
+        <div id="terminal-progress-bar" class="w-0 h-full bg-success transition-all duration-300"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Analysis Report Presentation -->
+  <AnalysisCard id="dashboard-report" className="hidden" />
+</div>
+
+<script>
+  import { triggerScamScan } from '../utils/scanEngine';
+
+  function init() {
+    // 1. Tab Switching Functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        // Update buttons
+        tabButtons.forEach(tb => {
+          tb.classList.remove('bg-primary', 'text-on-primary', 'font-semibold');
+          tb.classList.add('text-body', 'hover:text-ink');
+        });
+        btn.classList.remove('text-body', 'hover:text-ink');
+        btn.classList.add('bg-primary', 'text-on-primary', 'font-semibold');
+
+        // Update panels
+        tabPanels.forEach(panel => {
+          panel.classList.add('hidden');
+        });
+        const activePanel = document.getElementById(`panel-${targetTab}`);
+        if (activePanel) activePanel.classList.remove('hidden');
+        
+        // Hide report card when changing tabs
+        const report = document.getElementById('dashboard-report');
+        if (report) report.classList.add('hidden');
+      });
+    });
+
+    // 2. Scan Triggers
+    const scanTriggers = [
+      { btnId: 'btn-scan-url', inputId: 'input-url', type: 'website' },
+      { btnId: 'btn-scan-job', inputId: 'textarea-job', type: 'job' },
+      { btnId: 'btn-scan-email', inputId: 'textarea-email', type: 'email' },
+      { btnId: 'btn-scan-sms', inputId: 'textarea-sms', type: 'sms' },
+      { btnId: 'btn-scan-phone', inputId: 'input-phone', type: 'phone' },
+      { btnId: 'btn-scan-store', inputId: 'input-store', type: 'store' }
+    ];
+
+    scanTriggers.forEach(({ btnId, inputId, type }) => {
+      const btn = document.getElementById(btnId);
+      const input = document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
+      
+      if (btn && input) {
+        btn.addEventListener('click', () => {
+          const val = input.value.trim();
+          if (!val) {
+            alert('Please enter some content to analyze.');
+            return;
+          }
+          triggerScamScan(val, type);
+        });
+      }
+    });
+
+    // Popular test click links
+    const popularLinks = document.querySelectorAll('.test-url-link');
+    popularLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const text = (e.target as HTMLButtonElement).textContent || '';
+        const urlInput = document.getElementById('input-url') as HTMLInputElement;
+        if (urlInput) {
+          urlInput.value = text;
+          triggerScamScan(text, 'website');
+        }
+      });
+    });
+
+    // 3. Handle Auto-Scanning from URL Parameters (e.g. ?url=something or ?type=email&val=xyz)
+    const params = new URLSearchParams(window.location.search);
+    const queryUrl = params.get('url') || params.get('scan');
+    const queryVal = params.get('val');
+    const queryType = params.get('type') || 'url';
+
+    if (queryUrl) {
+      const urlInput = document.getElementById('input-url') as HTMLInputElement;
+      if (urlInput) {
+        urlInput.value = queryUrl;
+        // Auto select url tab if not already selected
+        const urlTab = document.querySelector('[data-tab="url"]') as HTMLButtonElement;
+        if (urlTab) urlTab.click();
+        
+        // Timeout to ensure everything is initialized
+        setTimeout(() => {
+          triggerScamScan(queryUrl, 'website');
+        }, 300);
+      }
+    } else if (queryVal && queryType) {
+      // Find appropriate input and tab
+      const tabMap: Record<string, string> = {
+        'website': 'url',
+        'url': 'url',
+        'job': 'job',
+        'email': 'email',
+        'sms': 'sms',
+        'phone': 'phone',
+        'store': 'store'
+      };
+      const resolvedTab = tabMap[queryType] || 'url';
+      
+      const tabBtn = document.querySelector(`[data-tab="${resolvedTab}"]`) as HTMLButtonElement;
+      if (tabBtn) tabBtn.click();
+
+      setTimeout(() => {
+        let inputId = 'input-url';
+        if (resolvedTab === 'job') inputId = 'textarea-job';
+        else if (resolvedTab === 'email') inputId = 'textarea-email';
+        else if (resolvedTab === 'sms') inputId = 'textarea-sms';
+        else if (resolvedTab === 'phone') inputId = 'input-phone';
+        else if (resolvedTab === 'store') inputId = 'input-store';
+
+        const inputEl = document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
+        if (inputEl) {
+          inputEl.value = queryVal;
+          triggerScamScan(queryVal, queryType);
+        }
+      }, 300);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

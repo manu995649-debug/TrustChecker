@@ -1,0 +1,74 @@
+---
+const currentYear = new Date().getFullYear();
+---
+<footer class="w-full bg-canvas border-t border-hairline py-16 px-6 md:px-12 select-none relative z-10">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
+    <!-- Column 1: Info -->
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7V12C3 17.5 7 21.8 12 23C17 21.8 21 17.5 21 12V7L12 2Z" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M9 11.5L11 13.5L15 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="text-sm font-semibold tracking-tight text-ink">TrustChecker<span class="text-link">.</span></span>
+      </div>
+      <p class="text-xs text-body leading-relaxed max-w-xs">
+        AI-powered scam detection platform helping USA consumers, job seekers, online shoppers, and seniors identify online fraud instantly.
+      </p>
+      <div class="text-xs text-mute font-mono">
+        "Check before you trust."
+      </div>
+    </div>
+
+    <!-- Column 2: Tools -->
+    <div class="flex flex-col gap-4">
+      <span class="caption-mono text-ink font-semibold">Verification Tools</span>
+      <ul class="flex flex-col gap-2.5 text-xs text-body">
+        <li><a href="/website-scam-checker" class="hover:text-ink hover:underline">Website Scam Checker</a></li>
+        <li><a href="/fake-job-offer-checker" class="hover:text-ink hover:underline">Fake Job Offer Checker</a></li>
+        <li><a href="/phishing-email-checker" class="hover:text-ink hover:underline">Phishing Email Checker</a></li>
+        <li><a href="/sms-scam-checker" class="hover:text-ink hover:underline">SMS Scam Checker</a></li>
+        <li><a href="/phone-number-scam-checker" class="hover:text-ink hover:underline">Phone Number Reputation</a></li>
+        <li><a href="/online-store-checker" class="hover:text-ink hover:underline">Online eCommerce Store Checker</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 3: Resources -->
+    <div class="flex flex-col gap-4">
+      <span class="caption-mono text-ink font-semibold">Resources & SEO</span>
+      <ul class="flex flex-col gap-2.5 text-xs text-body">
+        <li><a href="/scam-detector" class="hover:text-ink hover:underline">Scam Detector Dashboard</a></li>
+        <li><a href="/is-this-website-legit" class="hover:text-ink hover:underline">Is This Website Legit?</a></li>
+        <li><a href="/website-scam-checker" class="hover:text-ink hover:underline">Analyze Domain Safety</a></li>
+        <li><a href="https://www.scamadviser.com" target="_blank" rel="noopener noreferrer" class="hover:text-ink hover:underline">ScamAdviser Research</a></li>
+        <li><a href="https://www.scam-detector.com" target="_blank" rel="noopener noreferrer" class="hover:text-ink hover:underline">Scam Detector Portal</a></li>
+        <li><a href="https://www.urlvoid.com" target="_blank" rel="noopener noreferrer" class="hover:text-ink hover:underline">URLVoid Security Check</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 4: Platform -->
+    <div class="flex flex-col gap-4">
+      <span class="caption-mono text-ink font-semibold">Privacy & Safety</span>
+      <p class="text-xs text-body leading-relaxed">
+        Your safety is our top priority. Searches on TrustChecker are 100% private, anonymous, and encrypted. We do not track or share your pasted data.
+      </p>
+      <div class="text-[10px] text-mute flex items-center gap-1.5 mt-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+        <span>Secure HTTPS Connection Active</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto border-t border-hairline mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="text-[11px] text-mute">
+      &copy; {currentYear} TrustChecker Inc. All rights reserved.
+    </div>
+    <div class="flex gap-4 text-[11px] text-mute">
+      <a href="#" class="hover:text-body">Privacy Policy</a>
+      <span>&middot;</span>
+      <a href="#" class="hover:text-body">Terms of Service</a>
+      <span>&middot;</span>
+      <a href="#" class="hover:text-body">Report Abuse</a>
+    </div>
+  </div>
+</footer>

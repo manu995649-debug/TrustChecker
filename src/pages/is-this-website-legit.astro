@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InteractiveChecker from '../components/InteractiveChecker.astro';
+---
+
+<Layout 
+  title="Is This Website Legit? - Free Trust & Scam Scan - TrustChecker"
+  description="Validate domain registration age, SSL trust indicators, active malware reports, and fake clone patterns before clicking links. Run a free trust check."
+  activePath="/website-scam-checker"
+>
+  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+    <!-- Header -->
+    <header class="text-center flex flex-col items-center gap-4 select-none">
+      <span class="caption-mono text-link font-semibold">LEGITIMACY AUDIT</span>
+      <h1 class="display-lg text-ink font-semibold">Is this website legit.</h1>
+      <p class="text-sm text-body max-w-lg">
+        Stop phishing attacks before they start. Enter any web domain or URL to evaluate domain age, spoofing, and cybersecurity indicators in real-time.
+      </p>
+    </header>
+
+    <!-- Checker Dashboard -->
+    <InteractiveChecker defaultTab="url" />
+
+    <!-- Educational Content (Scam Guides) -->
+    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
+      <h2 class="display-sm text-ink">How to verify website legitimacy.</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed text-body">
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">1. Check the Address Bar Spelling</span>
+          <p>
+            Scammers create lookalike URLs (called typo-squatting) to spoof popular brands. For example, `paypaI.com` (using a capital letter i instead of L) or `chase-security-update.com`. Always check the spelling letter-by-letter.
+          </p>
+        </div>
+        
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">2. Look up the Domain Registration Date</span>
+          <p>
+            Scam websites are typically short-lived. A shopping or banking site registered only a few days or weeks ago is a major warning flag, regardless of how professional the page looks.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">3. Check SSL Encryption Presence</span>
+          <p>
+            Legitimate websites handling credentials use secure HTTPS connections (marked by a padlock icon). An insecure HTTP URL is a high-risk indicator for credentials theft.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
+          <span class="font-semibold text-ink">4. Search for Contact/Company Details</span>
+          <p>
+            Fake sites often lack physical address records, standard customer service numbers, or transparent terms of service, hiding behind anonymous domain registrars.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>

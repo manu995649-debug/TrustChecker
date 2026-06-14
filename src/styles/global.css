@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #171717;
+  --color-on-primary: #ffffff;
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #888888;
+  --color-hairline: #ebebeb;
+  --color-hairline-strong: #a1a1a1;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-soft-2: #f5f5f5;
+  --color-link: #0070f3;
+  --color-success: #0070f3;
+  --color-error: #ee0000;
+  --color-error-soft: #f7d4d6;
+  --color-error-deep: #c50000;
+  --color-warning: #f5a623;
+  --color-warning-soft: #ffefcf;
+  --color-warning-deep: #ab570a;
+  --color-violet: #7928ca;
+  --color-cyan: #50e3c2;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  
+  --shadow-level1: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --shadow-level2: inset 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 2px 2px rgba(0, 0, 0, 0.04);
+  --shadow-level3: inset 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 8px -8px rgba(0, 0, 0, 0.04);
+  --shadow-level4: inset 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.04), 0px 8px 16px -4px rgba(0, 0, 0, 0.04);
+  --shadow-level5: inset 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 8px 16px -4px rgba(0, 0, 0, 0.04), 0px 24px 32px -8px rgba(0, 0, 0, 0.06);
+
+  --animate-scan: scan 2s linear infinite;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+}
+
+/* Dark Mode overrides */
+html.dark {
+  --color-primary: #ffffff;
+  --color-on-primary: #000000;
+  --color-ink: #ededed;
+  --color-body: #a0a0a0;
+  --color-mute: #555555;
+  --color-hairline: #1c1c1c;
+  --color-hairline-strong: #333333;
+  --color-canvas: #0a0a0a;
+  --color-canvas-soft: #000000;
+  --color-canvas-soft-2: #121212;
+
+  --shadow-level1: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-level2: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0px 1px 1px rgba(0, 0, 0, 0.2), 0px 2px 2px rgba(0, 0, 0, 0.4);
+  --shadow-level3: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.4), 0px 8px 8px -8px rgba(0, 0, 0, 0.4);
+  --shadow-level4: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.4), 0px 8px 16px -4px rgba(0, 0, 0, 0.4);
+  --shadow-level5: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0px 1px 1px rgba(0, 0, 0, 0.2), 0px 8px 16px -4px rgba(0, 0, 0, 0.4), 0px 24px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+html.dark .mesh-gradient-bg {
+  background: radial-gradient(at 10% 20%, rgba(80, 227, 194, 0.06) 0px, transparent 50%),
+              radial-gradient(at 90% 10%, rgba(0, 112, 243, 0.08) 0px, transparent 50%),
+              radial-gradient(at 50% 80%, rgba(121, 40, 202, 0.06) 0px, transparent 50%),
+              radial-gradient(at 80% 90%, rgba(255, 0, 128, 0.04) 0px, transparent 40%),
+              radial-gradient(at 20% 90%, rgba(245, 166, 35, 0.04) 0px, transparent 40%);
+  opacity: 0.9;
+}
+
+/* Custom styles and overrides */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas-soft);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-canvas-soft);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mute);
+}
+
+/* Vercel Mesh Gradient Background */
+.mesh-gradient-bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1400px;
+  height: 480px;
+  background: radial-gradient(at 10% 20%, rgba(80, 227, 194, 0.15) 0px, transparent 50%),
+              radial-gradient(at 90% 10%, rgba(0, 112, 243, 0.15) 0px, transparent 50%),
+              radial-gradient(at 50% 80%, rgba(121, 40, 202, 0.12) 0px, transparent 50%),
+              radial-gradient(at 80% 90%, rgba(255, 0, 128, 0.08) 0px, transparent 40%),
+              radial-gradient(at 20% 90%, rgba(245, 166, 35, 0.08) 0px, transparent 40%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.8;
+}
+
+/* Subtle border ring class */
+.hairline-border {
+  border: 1px solid var(--color-hairline);
+}
+
+/* Text styles */
+.display-xl {
+  font-size: 3rem; /* 48px */
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em; /* -2.4px */
+}
+
+.display-lg {
+  font-size: 2rem; /* 32px */
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.04em; /* -1.28px */
+}
+
+.display-md {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  line-height: 1.33;
+  letter-spacing: -0.04em; /* -0.96px */
+}
+
+.display-sm {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.03em; /* -0.6px */
+}
+
+.caption-mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.33;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Accordion transition utility */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+}
+.accordion-content.open {
+  max-height: 1000px;
+  transition: max-height 0.3s cubic-bezier(1, 0, 1, 0);
+}
+
+/* Clear native browser input outlines and style autofill colors */
+input,
+textarea,
+select {
+  outline: none !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid transparent !important;
+  outline-offset: 2px !important;
+}
+
+/* Chrome/Safari/Edge autofill override to preserve canvas and text colors */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-canvas) inset !important;
+  -webkit-text-fill-color: var(--color-ink) !important;
+  border-color: var(--color-hairline-strong) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
