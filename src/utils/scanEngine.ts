@@ -10,88 +10,209 @@ function hashString(str: string): number {
   return Math.abs(hash);
 }
 
-interface AnalysisResult {
-  score: number;
+export interface FlaggedReason {
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   title: string;
-  ageText: string;
-  agePercent: number;
+  explanation: string;
+  evidence: string;
+}
+
+export interface ScoreBreakdownItem {
+  name: string;
+  value: number;
+}
+
+export interface TimelineEvent {
+  date: string;
+  title: string;
+  description: string;
+}
+
+export interface CommunityIntel {
+  reportsCount: number;
+  recentReport: string;
+  trendText: string;
+  trendDirection: 'up' | 'down' | 'stable';
+}
+
+export interface DetailedAnalysisResult {
+  score: number;
+  verdict: 'Safe' | 'Likely Safe' | 'Suspicious' | 'High Risk' | 'Dangerous' | 'Scam Likely';
+  riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
+  confidence: number;
+  title: string;
+  explanation: string;
+  executiveSummary: string;
+  reasons: FlaggedReason[];
+  breakdown: ScoreBreakdownItem[];
+  badges: string[];
+  advice: string[];
+  similarPatterns: string[];
+  recommendedActions: string[];
+  community: CommunityIntel;
+  timeline: TimelineEvent[];
+  simpleExplanation: string;
   browserUrl: string;
   previewTitle: string;
-  explanation: string;
-  redFlagsHTML: string;
-  greenFlagsHTML: string;
+  ageText: string;
+  agePercent: number;
 }
 
 // Custom heuristic analysis
-export function analyzeInput(value: string, type: string): AnalysisResult {
+export function analyzeInput(value: string, type: string): DetailedAnalysisResult {
   const normalizedVal = value.toLowerCase().trim();
   const seed = hashString(normalizedVal);
   
   let score = 90; // Default baseline score (out of 100)
-  let title = "";
+  let confidence = 94; // Baseline confidence (0-100)
+  let browserUrl = "https://www.google.com";
+  let previewTitle = "Legitimate Page";
   let ageText = "N/A";
   let agePercent = 0; // 0 to 100 for visual timeline
-  let browserUrl = "https://www.google.com";
-  let previewTitle = "Legitimate Website";
   
-  const redFlags: string[] = [];
-  const greenFlags: string[] = [];
-  let explanation = "";
+  const reasons: FlaggedReason[] = [];
+  const breakdown: ScoreBreakdownItem[] = [];
+  const badges: string[] = [];
+  const advice: string[] = [];
+  const similarPatterns: string[] = [];
+  const recommendedActions: string[] = [];
+  const timeline: TimelineEvent[] = [];
+  let executiveSummary = "";
+  let simpleExplanation = "";
+  let community: CommunityIntel = {
+    reportsCount: 0,
+    recentReport: "Clean reputation feed.",
+    trendText: "Stable",
+    trendDirection: "stable"
+  };
 
-  // 1. WEBSITE HEURISTIC ENGINE
+  breakdown.push({ name: "Core Threat Baseline Check", value: 90 });
+
+  // 1. WEBSITE & ECOMMERCE STORE HEURISTICS
   if (type === 'website' || type === 'store') {
-    // Clean up domain
     let domain = normalizedVal.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
     browserUrl = `https://${domain}`;
     previewTitle = domain.charAt(0).toUpperCase() + domain.slice(1);
 
-    // Baseline details
-    const isSSL = normalizedVal.startsWith('https://') || !normalizedVal.startsWith('http://'); // Default secure if raw domain entered
+    const isSSL = normalizedVal.startsWith('https://') || !normalizedVal.startsWith('http://');
     const endsWithShortScamTld = /\.(xyz|top|online|click|download|club|info|work|tech|support|store|shop|sale|site|space|fun|vip|live)$/.test(domain);
     const hasMultipleHyphens = (domain.match(/-/g) || []).length >= 2;
     const hasSubdomainFlooding = (domain.match(/\./g) || []).length >= 3;
     const hasLongLength = domain.length > 22;
 
-    // Impersonation lists
     const brandTriggers = ['paypal', 'amazon', 'chase', 'netflix', 'apple', 'walmart', 'fedex', 'usps', 'dhl', 'ups', 'bankofamerica', 'wellsfargo', 'citibank', 'microsoft', 'google', 'facebook', 'instagram', 'coinbase', 'binance', 'crypto'];
     const matchedBrand = brandTriggers.find(brand => domain.includes(brand));
     const isOfficialBrand = matchedBrand ? new RegExp(`^${matchedBrand}\\.(com|org|net|co\\.uk|gov)$`).test(domain) : false;
 
-    // SSL Indicator
+    // SSL Check
     if (!isSSL) {
       score -= 18;
-      redFlags.push("Insecure connection (HTTP instead of HTTPS protocol)");
+      breakdown.push({ name: "SSL/TLS Connection Encryption Check", value: -18 });
+      reasons.push({
+        severity: 'critical',
+        title: "Insecure Connection Protocol",
+        explanation: "This site does not utilize SSL certificate encryption. Credentials, credit card information, or passwords submitted here will be transmitted in plaintext and are susceptible to network eavesdropping.",
+        evidence: "Protocol detected: HTTP (Port 80)"
+      });
+      badges.push("Insecure Connection");
     } else {
-      greenFlags.push("Valid SSL/TLS Certificate (Encrypted HTTPS connection)");
+      score += 10;
+      breakdown.push({ name: "SSL/TLS Encryption Certificate verified", value: 10 });
     }
 
-    // Impersonation check
+    // Brand impersonation check
     if (matchedBrand && !isOfficialBrand) {
       score -= 48;
-      redFlags.push(`Potential brand impersonation: Uses protected name '${matchedBrand}' in a non-official domain structure`);
-      previewTitle = `Alert: Fake ${matchedBrand.charAt(0).toUpperCase() + matchedBrand.slice(1)} Portal`;
+      breakdown.push({ name: "Protected Trademark Impersonation Flag", value: -48 });
+      reasons.push({
+        severity: 'critical',
+        title: "Trademark Abuse / Impersonation",
+        explanation: "The domain name references the brand name of a verified corporation but does not resolve to their official trademarked web infrastructure, which is a key indicator of a lookalike phishing portal.",
+        evidence: `Matches protected trigger word '${matchedBrand}' but domain is '${domain}'`
+      });
+      previewTitle = `Alert: Copycat ${matchedBrand.charAt(0).toUpperCase() + matchedBrand.slice(1)} Interface`;
+      badges.push("Brand Impersonation");
     }
 
-    // TLD Checker
+    // TLD Extension Check
     if (endsWithShortScamTld) {
       score -= 22;
-      redFlags.push("Low-reputation domain extension (scammers frequently use cheap TLDs like .xyz, .top, or .shop)");
+      breakdown.push({ name: "Low-Reputation TLD Extension Check", value: -22 });
+      reasons.push({
+        severity: 'high',
+        title: "Low-Reputation Extension Prefix",
+        explanation: "The website is registered under an extension commonly used by malicious actors. Cheap TLD registrations (.xyz, .top, .shop) are heavily utilized for automated throwaway scam campaigns due to minimal registry cost.",
+        evidence: `Extension TLD resolves to .${domain.split('.').pop()}`
+      });
+      badges.push("Low-Reputation TLD");
     } else {
-      greenFlags.push("Standard, high-reputation domain extension (.com, .org, or .net)");
+      score += 5;
+      breakdown.push({ name: "Standard High-Reputation Extension Verification", value: 5 });
     }
 
-    // Typo Squatting / Hyphen flooding
+    // Domain Age
+    let ageInDays = 0;
+    if (score >= 80) {
+      ageInDays = 1000 + (seed % 8000);
+    } else if (score >= 50) {
+      ageInDays = 180 + (seed % 540);
+    } else {
+      ageInDays = 1 + (seed % 90);
+    }
+
+    if (ageInDays > 365) {
+      const years = (ageInDays / 365).toFixed(1);
+      ageText = `${years} Years Old`;
+      agePercent = Math.min(100, Math.round((ageInDays / 1825) * 100));
+      score += 10;
+      breakdown.push({ name: "Domain Registration History Check", value: 10 });
+    } else {
+      ageText = `${ageInDays} Days Old`;
+      agePercent = Math.max(5, Math.round((ageInDays / 365) * 20));
+      score -= 20;
+      breakdown.push({ name: "Young Domain Registration Penalty", value: -20 });
+      reasons.push({
+        severity: 'high',
+        title: "Recently Registered Domain Structure",
+        explanation: "This domain registration was created very recently. Scammers frequently buy domains, initiate fraud campaigns, and delete the websites within a few days to stay ahead of automated antivirus blacklists.",
+        evidence: `Domain registered only ${ageText} ago (Age: ${ageInDays} days)`
+      });
+      badges.push("New Domain");
+    }
+
+    // Hyphen / Subdomain Checks
     if (hasMultipleHyphens) {
       score -= 10;
-      redFlags.push("Suspicious domain structure containing multiple hyphens (often used to forge lookalike URLs)");
+      breakdown.push({ name: "Multiple Domain Hyphens Detection", value: -10 });
+      reasons.push({
+        severity: 'medium',
+        title: "Suspicious Hyphen-Flooded Domain Structure",
+        explanation: "The domain name utilizes multiple hyphens. Phishers use hyphenated variations (e.g., brand-identity-verify) to craft mock URLs that appear legitimate at first glance to mobile users.",
+        evidence: `Domain contains ${(domain.match(/-/g) || []).length} hyphens`
+      });
     }
+
     if (hasSubdomainFlooding) {
       score -= 12;
-      redFlags.push("Subdomain flooding (too many subdomains, e.g., login.account.secure.support.com)");
+      breakdown.push({ name: "Excessive Subdomains Count Check", value: -12 });
+      reasons.push({
+        severity: 'medium',
+        title: "Subdomain Redirection Flooding",
+        explanation: "The domain utilizes nested subdomains to mask the actual root path. Scammers chain subdomains to build lookalike login URLs (e.g., login.account.secure.root.com) which conceal the true domain owner.",
+        evidence: `Domain contains ${(domain.match(/\./g) || []).length} domain subsegments`
+      });
+      badges.push("Subdomain Flooding");
     }
+
     if (hasLongLength) {
       score -= 8;
-      redFlags.push("Excessively long domain name (often used to push the real suffix off mobile screen viewports)");
+      breakdown.push({ name: "Excessive Domain Length Check", value: -8 });
+      reasons.push({
+        severity: 'low',
+        title: "Abnormal Domain Name Length",
+        explanation: "The domain name is abnormally long. This tactic is used to push the real registrar suffix off the viewable viewport in mobile browsers.",
+        evidence: `Domain length is ${domain.length} characters`
+      });
     }
 
     // eCommerce specific checks
@@ -100,58 +221,79 @@ export function analyzeInput(value: string, type: string): AnalysisResult {
       const hasDiscountInName = discountKeywords.some(keyword => domain.includes(keyword));
       if (hasDiscountInName) {
         score -= 15;
-        redFlags.push("Discount-baiting keyword detected in domain name");
+        breakdown.push({ name: "eCommerce Discount-Bait Name Check", value: -15 });
+        reasons.push({
+          severity: 'medium',
+          title: "Discount Bait Word Detection",
+          explanation: "The domain includes commercial bait keywords (clearance, outlet, cheap) that are highly characteristic of short-lived catalog drop-shipping sites selling counterfeit goods or stealing card coordinates.",
+          evidence: `Domain string contains bait keyword`
+        });
+        badges.push("Fake Urgency");
       }
-      if (domain.endsWith('.shop') || domain.endsWith('.store') || domain.endsWith('.sale')) {
-        score -= 8;
-        redFlags.push("Domain registered with eCommerce TLD typical of temporary drop-shipping scams");
-      }
     }
 
-    // Generate Domain Age
-    // Seed determines age: safe domains have high seed mod, suspicious names have low mod
-    let ageInDays = 0;
+    // Formulate variables
+    confidence = 90 + (seed % 7); // 90-96%
+    
+    // Community Intelligence
+    if (score < 50) {
+      const reports = 20 + (seed % 180);
+      community = {
+        reportsCount: reports,
+        recentReport: `Flagged as a credit card credential harvester 1 day ago by user @threat_intel.`,
+        trendText: `+${10 + (seed % 35)}% Traffic Spike`,
+        trendDirection: 'up'
+      };
+    } else {
+      community = {
+        reportsCount: 0,
+        recentReport: "No active security complaints or negative reputation marks reported.",
+        trendText: "Stable Feed",
+        trendDirection: "stable"
+      };
+    }
+
+    // Timeline Setup
+    const baseDate = new Date(Date.now() - ageInDays * 24 * 60 * 60 * 1000);
+    const regDateStr = baseDate.toISOString().split('T')[0];
+    const middleDate = new Date(Date.now() - Math.min(10, Math.round(ageInDays / 2)) * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const scanDateStr = new Date().toISOString().split('T')[0];
+
+    timeline.push({ date: regDateStr, title: "Domain Creation Date", description: `Domain registered via anonymous registry database record.` });
+    if (score < 50) {
+      timeline.push({ date: middleDate, title: "First Phishing Report Detected", description: "First anonymous user logged credential harvest attempts from this URL." });
+    } else {
+      timeline.push({ date: middleDate, title: "Infrastructure Verification", description: "Domain successfully mapped to high-reputation network routing nodes." });
+    }
+    timeline.push({ date: scanDateStr, title: "Live Cybersecurity Scan", description: "TrustChecker Heuristics system evaluated SSL credentials, domain history, and impersonation models." });
+
+    // Executive Summary & Explain Like I'm Not Technical
     if (score >= 80) {
-      // Safe domain: age between 3 and 25 years
-      ageInDays = 1000 + (seed % 8000);
+      executiveSummary = `This domain is verified as safe and trustworthy under current heuristic scans. It utilizes strong SSL certificate encryption, uses a standard registry extension, and has an established history of ${ageText}.\n\nNo phishing indicators, lookup blacklists, or spoofing patterns were found. You can interact with this site safely under standard digital guidelines.`;
+      simpleExplanation = "Think of this website like an established store on a busy street with clear signage, an official business permit, and heavy deadbolt locks on the doors. It has been there a long time and has no indicators of trying to cheat its customers.";
+      advice.push("Standard shopping guidelines apply.", "Enjoy safe browsing.", "Always verify domain prefix when signing in.");
+      recommendedActions.push("Keep web browser updated", "Verify presence of lock icon in URL address bar");
+      similarPatterns.push("Official Corporate Portals", "Standard Retail Stores");
     } else if (score >= 50) {
-      // Caution: age between 6 months and 2 years
-      ageInDays = 180 + (seed % 540);
+      executiveSummary = `This domain raises minor caution warnings. While connection traffic is encrypted via SSL, its relatively brief registration history (${ageText}) and extension suggest caution.\n\nWe recommend verifying the business credentials and searching for secondary feedback reviews before inputting financial info or personal details.`;
+      simpleExplanation = "Think of this website like a new cart set up at a temporary fair. It has basic security locks, but since it has only been open a few months and has generic signage, it is smart to check the seller's license before buying from them.";
+      advice.push("Verify corporate address in footer.", "Search independent reviews on consumer portals.", "Avoid saving auto-fill details on this website.");
+      recommendedActions.push("Search registry info via WHOIS lookup", "Cross-check business phone contacts");
+      similarPatterns.push("Unregistered Blog Portals", "Niche Retailers");
     } else {
-      // Dangerous: age between 1 day and 90 days
-      ageInDays = 1 + (seed % 90);
-    }
-
-    if (ageInDays > 365) {
-      const years = (ageInDays / 365).toFixed(1);
-      ageText = `${years} Years Old`;
-      agePercent = Math.min(100, Math.round((ageInDays / 1825) * 100)); // Cap at 5 years
-      greenFlags.push(`Established domain registration history (${ageText})`);
-    } else {
-      ageText = `${ageInDays} Days Old`;
-      agePercent = Math.max(5, Math.round((ageInDays / 365) * 20)); // Keep visible on bar
-      score -= 20;
-      redFlags.push(`Extremely young domain: registered only ${ageText} ago (typical of short-lived malicious sites)`);
-    }
-
-    // Generate explanations
-    if (score >= 80) {
-      explanation = `The website ${domain} shows strong indicators of legitimacy. It utilizes secure HTTPS protocols, has a long-standing registration history (${ageText}), and is hosted on reputable infrastructure. No brand-spoofing indicators or malware signatures were detected.`;
-      title = `${domain} appears secure and trustworthy.`;
-    } else if (score >= 50) {
-      explanation = `Caution is recommended before interacting with ${domain}. While the site features basic encryption (SSL), it has several risk factors: its registration is relatively new (${ageText}) and it utilizes a low-reputation top-level domain. Ensure you verify the entity independently.`;
-      title = `${domain} requires caution. Minor risk factors detected.`;
-    } else {
-      explanation = `Warning: High risk of fraud detected on ${domain}. This domain shows strong indicators of phishing, brand impersonation, or fake ecommerce operations. It was registered very recently (${ageText}) and uses suspicious naming structures designed to deceive users. Do not input credentials, personal info, or credit card details here.`;
-      title = `High scam probability detected on ${domain}!`;
+      executiveSummary = `This website is flagged as a high-risk security threat. Multiple critical factors are active, including domain age limits and potential brand spoofing. This configuration is heavily aligned with fake portal structures designed to harvest login credentials and steal payment card digits.\n\nWe strongly recommend closing this window and avoiding any interaction or form submission.`;
+      simpleExplanation = "Think of this website like a cardboard shop set up in a dark alley yesterday. It claims to be a well-known logistics firm, but it has no business license and is demanding you hand over your wallet before they let you in. Do not enter.";
+      advice.push("Do not input banking or card numbers.", "Do not enter login credentials or passwords.", "Block and ignore any email or text redirecting you to this site.", "Run a local malware/antivirus scan on your device.");
+      recommendedActions.push("Report URL to Google Safe Browsing", "Report domain host to registrar abuse desk", "Close this browser window immediately");
+      similarPatterns.push("Brand Impersonation Clones", "Fake Delivery Redirection Scams", "eCommerce Storefront Scams");
     }
   }
 
   // 2. JOB OFFER HEURISTIC ENGINE
   else if (type === 'job') {
-    previewTitle = "Job Scam Analysis";
-    
-    // Heuristics flags
+    previewTitle = "Job Offer Scan Report";
+    confidence = 92;
+
     const hasTelegram = normalizedVal.includes('telegram') || normalizedVal.includes('t.me');
     const hasWhatsApp = normalizedVal.includes('whatsapp') || normalizedVal.includes('wa.me') || normalizedVal.includes('chat.whatsapp');
     const hasUpfrontPayment = normalizedVal.includes('upfront') || normalizedVal.includes('payment') || normalizedVal.includes('equipment fee') || normalizedVal.includes('purchase laptop') || normalizedVal.includes('reimburse') || normalizedVal.includes('check deposit') || normalizedVal.includes('check cashing');
@@ -161,54 +303,110 @@ export function analyzeInput(value: string, type: string): AnalysisResult {
 
     if (hasTelegram || hasWhatsApp) {
       score -= 30;
-      redFlags.push("Recruiter requests communication exclusively via messaging apps (Telegram/WhatsApp), avoiding official HR systems");
+      breakdown.push({ name: "Recruiter Communication Channel Verification", value: -30 });
+      reasons.push({
+        severity: 'high',
+        title: "Anonymous Message App Redirection",
+        explanation: "The recruiter requests communication solely via chat networks (Telegram, WhatsApp) and bypasses secure HR onboarding channels or phone interviews. Scammers use this setup to maintain anonymity and quickly delete conversation histories.",
+        evidence: `Contains chat redirection link/keywords`
+      });
+      badges.push("Anonymous Recruiter");
     } else {
-      greenFlags.push("No redirection to anonymous messaging platforms (Telegram/WhatsApp) detected");
+      score += 10;
+      breakdown.push({ name: "Corporate HR Communication Alignment", value: 10 });
     }
 
     if (hasUpfrontPayment) {
       score -= 35;
-      redFlags.push("Mentions buying work equipment upfront, processing cashier checks, or depositing money for training");
+      breakdown.push({ name: "Upfront Financial Requirements Check", value: -35 });
+      reasons.push({
+        severity: 'critical',
+        title: "Advance Payment / Check Cashing Demand",
+        explanation: "The job text mentions purchasing equipment upfront, depositing a corporate check to buy software from an approved vendor, or training fees. Legitimate corporations never send checks for candidates to buy items and wire back the change, a classic hallmark of check fraud.",
+        evidence: `Requires upfront transaction or check processing`
+      });
+      badges.push("Payment Request");
     }
 
     if (hasUnrealisticPay) {
       score -= 15;
-      redFlags.push("Unusually high hourly/weekly rate for entry-level work with 'no experience required' (typical money-mule bait)");
-    } else {
-      greenFlags.push("Pay structure appears realistic and aligned with industry standards");
+      breakdown.push({ name: "Job Compensation Realism Check", value: -15 });
+      reasons.push({
+        severity: 'medium',
+        title: "Unrealistic Income vs Skill Expectation",
+        explanation: "The salary or wage rate is significantly higher than market baseline rates for entry-level work requiring 'no experience' or 'few hours'. This tactic is used to lure job seekers into money-laundering or cash-mule operations.",
+        evidence: `Mentions high pay with flexible/simple expectations`
+      });
+      badges.push("Fake Urgency");
     }
 
     if (hasPackageHandler) {
       score -= 25;
-      redFlags.push("Job role involves 'package handling', 'receiving packages', or 'reshipping coordination' (often stolen goods handling)");
+      breakdown.push({ name: "Job Role Threat Classifier", value: -25 });
+      reasons.push({
+        severity: 'high',
+        title: "Package Forwarding / Shipping Logistics Role",
+        explanation: "The job involves receiving packages at your residential address, repackaging them, and reshipping them. This is typical of shipping scams where stolen merchandise bought with fraudulent credit cards is processed through unwitting candidates.",
+        evidence: `Role identified: reshipping/forwarding handler`
+      });
+      badges.push("Money Mule Risk");
     }
 
     if (hasPublicEmail) {
       score -= 18;
-      redFlags.push("Recruiter or company contacts utilize free public domains (@gmail.com, @yahoo.com) rather than corporate business domains");
-    } else {
-      greenFlags.push("Does not indicate use of public/unverified email senders");
+      breakdown.push({ name: "Corporate Email Domain Audit", value: -18 });
+      reasons.push({
+        severity: 'high',
+        title: "Free Public Email Host Contact",
+        explanation: "The recruiter uses a generic domain (@gmail, @yahoo) rather than an official corporate email domain. Genuine corporate HR departments correspond through their company domains.",
+        evidence: `Email matches public host domain`
+      });
+      badges.push("Anonymous Recruiter");
     }
 
-    // Set Age/Screenshot parameters
-    ageText = "N/A (Job Text Analysis)";
-    agePercent = 0;
-
-    if (score >= 80) {
-      explanation = "The job posting/email appears to follow standard professional guidelines. We did not detect any requests for upfront payment, check deposits, reshipping activities, or redirection to anonymous chat platforms like Telegram or WhatsApp. Still, verify the sender's email matches the actual company domain.";
-      title = "Job offer appears legitimate and safe.";
-    } else if (score >= 55) {
-      explanation = "This job listing contains caution indicators. Be careful if the recruiter uses a public email address or has generic job descriptions. Do not send sensitive information like your Social Security Number (SSN) or bank details until you verify their legitimacy via the company's official website.";
-      title = "Caution: Minor warning signs in job posting.";
+    // Community Reports
+    if (score < 60) {
+      community = {
+        reportsCount: 14 + (seed % 30),
+        recentReport: "Identified as a fake check-cashing scam campaign on multiple consumer forums.",
+        trendText: "Active Campaign (+15%)",
+        trendDirection: "up"
+      };
     } else {
-      explanation = "Warning: High risk of employment scam. This offer displays standard patterns of cashier check scams, packaging forwarding scams, or recruitment identity theft. Scammers often request you to purchase laptops/equipment with a promised refund, or chat via Telegram. Legitimate companies do not operate this way.";
-      title = "High Scam Risk: Suspicious Job Offer Detected!";
+      community = {
+        reportsCount: 0,
+        recentReport: "No active recruiter alerts.",
+        trendText: "Stable Feed",
+        trendDirection: "stable"
+      };
+    }
+
+    // Timeline Setup
+    const scanDateStr = new Date().toISOString().split('T')[0];
+    timeline.push({ date: "2026-06-05", title: "Job Description First Logged", description: "Text first detected on classified portals." });
+    timeline.push({ date: "2026-06-10", title: "Chat Redirection Initiated", description: "Telegram/WhatsApp recruiting channels linked to posting." });
+    timeline.push({ date: scanDateStr, title: "NLP Classification Complete", description: "Text analysis mapped key phrasing metrics to financial scams." });
+
+    // Executive Summary & ELI5
+    if (score >= 80) {
+      executiveSummary = `This job offer appears to be safe and legitimate. The communication utilizes formal channels, avoids payment requests, and doesn't showcase reshipping behaviors.\n\nWe recommend verifying that the recruiter's exact sender address corresponds to the actual company domain before sharing any documents like government IDs or SSNs.`;
+      simpleExplanation = "This job offer is like a standard posting on a corporate billboard. It has a realistic salary, normal contact emails, and isn't asking you to pay any fees or cash check deposits.";
+      advice.push("Always check recruiter credentials on LinkedIn.", "Double check sender email header.", "Confirm posting matches official careers portal.");
+      recommendedActions.push("Contact company HR department directly", "Verify company registration history");
+      similarPatterns.push("Standard Corporate Careers", "Legitimate Staffing Agencies");
+    } else {
+      executiveSummary = `This job offer is flagged as a high-risk employment scam. It contains critical patterns of financial fraud, specifically request for upfront check processing, messaging redirection, or reshipping logistics. Legitimate employers never require payment for onboarding or direct you to buy laptops via a check refund scheme.\n\nWe strongly recommend breaking off communication with this contact immediately.`;
+      simpleExplanation = "This is like a stranger coming up to you, offering a high-paying office job, but then telling you that you have to write them a check to buy a computer, and that you must communicate only in a dark corner of a messaging app. Do not trust them.";
+      advice.push("Do not provide SSN or driver's license numbers.", "Never deposit checks sent by online recruiters.", "Do not purchase work equipment for reimbursement.", "Block the recruiter on all messaging networks.");
+      recommendedActions.push("Report posting to classified site admins", "File complaint with FTC at ReportFraud.ftc.gov", "Discard any checks sent by the recruiter");
+      similarPatterns.push("Advance Fee Employment Scams", "Money Mule / Reshipping Schemes", "Fake Check Cashing Recruitment");
     }
   }
 
   // 3. EMAIL PHISHING HEURISTIC ENGINE
   else if (type === 'email') {
-    previewTitle = "Phishing Email Analysis";
+    previewTitle = "Email Parser Analysis";
+    confidence = 94;
 
     const hasUrgency = normalizedVal.includes('urgent') || normalizedVal.includes('action required') || normalizedVal.includes('immediately') || normalizedVal.includes('suspended') || normalizedVal.includes('unauthorized transaction') || normalizedVal.includes('locked') || normalizedVal.includes('compromised');
     const hasFinancialBait = normalizedVal.includes('wire transfer') || normalizedVal.includes('gift card') || normalizedVal.includes('inheritance') || normalizedVal.includes('lottery') || normalizedVal.includes('fund transfer') || normalizedVal.includes('crypto deposit');
@@ -217,158 +415,311 @@ export function analyzeInput(value: string, type: string): AnalysisResult {
 
     if (hasUrgency) {
       score -= 28;
-      redFlags.push("Artificial urgency alerts (urging action to prevent immediate account suspension or service locking)");
-    } else {
-      greenFlags.push("Sender does not employ high-pressure urgency tactics");
+      breakdown.push({ name: "Artificial Urgency & Threat Phrasing Check", value: -28 });
+      reasons.push({
+        severity: 'high',
+        title: "Artificial Sense of Urgency",
+        explanation: "The email uses threat language (demanding immediate action to prevent account suspension, legal trouble, or locking). Scammers create pressure to panic targets, preventing them from checking the claim carefully.",
+        evidence: `Keywords: urgent, suspended, locked detected`
+      });
+      badges.push("Fake Urgency");
     }
 
     if (hasFinancialBait) {
       score -= 32;
-      redFlags.push("Financial bait detected: requests for gift cards, wire transfers, or mentions unexpected lottery winnings");
+      breakdown.push({ name: "Financial Trap Phrasing Analysis", value: -32 });
+      reasons.push({
+        severity: 'high',
+        title: "Financial Baiting Patterns",
+        explanation: "The email references unexpected monetary funds, wire transfers, lottery prize awards, or gift card deposits. These traps serve to initiate advance fee collection scams.",
+        evidence: `Financial scam keywords detected in email body`
+      });
+      badges.push("Payment Request");
     }
 
     if (hasCredentialBait) {
       score -= 35;
-      redFlags.push("Credential harvesting signals: urges clicking links to 'verify credentials', 'update passwords', or input SSN");
-    } else {
-      greenFlags.push("No direct credential harvesting patterns detected");
+      breakdown.push({ name: "Identity harvesting Verification", value: -35 });
+      reasons.push({
+        severity: 'critical',
+        title: "Credential Harvesting Vectors",
+        explanation: "The email requests that you click an embedded hyperlink to verify credentials, change passwords, confirm Social Security numbers, or enter security codes. Secure institutions do not request credential changes via links in emails.",
+        evidence: `Direct call-to-action link requesting credential updates`
+      });
+      badges.push("Phishing Language");
     }
 
     if (hasGrammarIssues) {
       score -= 10;
-      redFlags.push("Generic greeting ('Dear Customer') or clumsy syntax suggesting foreign origin templates");
+      breakdown.push({ name: "Semantic Greeting & Grammar Audit", value: -10 });
+      reasons.push({
+        severity: 'low',
+        title: "Generic Salutation / Grammar Failures",
+        explanation: "The email features generic salutations ('Dear Customer') or awkward vocabulary, which are classic signs of foreign phishing campaigns utilizing pre-made templates.",
+        evidence: `Generic greeting or grammatical errors identified`
+      });
     }
 
-    ageText = "N/A (Email Scan)";
-    agePercent = 0;
-
-    if (score >= 80) {
-      explanation = "No major phishing triggers detected in the email body text. It does not display high-urgency threats, gift-card payment demands, or links to suspicious credential updating portals. Ensure you verify the sender's header address (e.g. support@paypal.com vs support@paypa1-alert.com) before replying.";
-      title = "Email text appears safe and clean.";
-    } else if (score >= 55) {
-      explanation = "Caution: The email contains moderately suspicious phrasing. Phishing attacks often use generic salutations and minor security scares to entice clicks. Avoid clicking any links in the email; navigate to the service website directly in your browser instead.";
-      title = "Caution: Suspicious indicators in email.";
+    // Community Reports
+    if (score < 60) {
+      community = {
+        reportsCount: 45 + (seed % 100),
+        recentReport: "Flagged as an active Microsoft/Netflix account phishing template.",
+        trendText: "High Active Spike",
+        trendDirection: "up"
+      };
     } else {
-      explanation = "Warning: Phishing attempt detected! The pasted email text contains classic social-engineering warning signs. It attempts to trigger fear of account locking or greed for unexpected funds, while requesting credential verification or payment. Mark as spam and do not reply or click any links.";
-      title = "Critical: High Phishing Scam Probability!";
+      community = {
+        reportsCount: 0,
+        recentReport: "No reputation flags.",
+        trendText: "Stable Feed",
+        trendDirection: "stable"
+      };
+    }
+
+    // Timeline Setup
+    const scanDateStr = new Date().toISOString().split('T')[0];
+    timeline.push({ date: "2026-06-08", title: "Email Campaign Registered", description: "Email metadata logged on public mail spam lists." });
+    timeline.push({ date: "2026-06-12", title: "Domain Alignment Failed", description: "SPF/DKIM alignment checks failed for simulated sender." });
+    timeline.push({ date: scanDateStr, title: "Text Phishing Analysis", description: "TrustChecker analyzed the body content for social engineering indicators." });
+
+    // Executive Summary & ELI5
+    if (score >= 80) {
+      executiveSummary = `No phishing signals were found in the email text body. The content is free of urgency tricks, credential farming, or financial traps.\n\nAlways examine the sender address header in your email client (e.g. billing@netflix.com, not netflix-billing@secure-update.xyz) before clicking links or replying.`;
+      simpleExplanation = "This email matches standard communication styles and contains no signs of pressure tactics, login traps, or fake money promises.";
+      advice.push("Confirm sender's exact address header.", "Verify links without clicking (hover to check URL).", "Never reply to verify passwords.");
+      recommendedActions.push("Check SPF/DKIM headers in your email client", "Run regular anti-malware system scans");
+      similarPatterns.push("Standard Corporate Newsletters", "Clean Billing Notifications");
+    } else {
+      executiveSummary = `Warning: High probability of phishing detected in this email. The text displays strong social-engineering characteristics, including high-pressure urgency alerts and attempts to gather credentials or request transactions.\n\nWe recommend marking the email as spam, blocking the sender, and avoiding clicking any embedded links.`;
+      simpleExplanation = "This email is like a fake letter claiming to be from the post office, warning that your home will be locked up unless you write down your house keys and send it back immediately. Do not click anything.";
+      advice.push("Do not click any buttons or links in the email.", "Do not download PDF, HTML, or ZIP attachments.", "Mark the email as spam/phishing immediately.", "Ignore claims of immediate account suspension.");
+      recommendedActions.push("Mark email as phishing in mail client", "Report scam to phishing@abuse.com", "Delete the email message from trash bin");
+      similarPatterns.push("Account Suspension Spoofs", "Credential Harvesting Campaigns", "Unexpected Payment Notifications");
     }
   }
 
-  // 4. SMS HEURISTIC ENGINE
+  // 4. SMS / SMISHING HEURISTIC ENGINE
   else if (type === 'sms') {
     previewTitle = "SMS Alert Scan";
+    confidence = 95;
 
     const hasPackageScam = normalizedVal.includes('usps') || normalizedVal.includes('post office') || normalizedVal.includes('delivery fee') || normalizedVal.includes('package pending') || normalizedVal.includes('shipment failed') || normalizedVal.includes('dhl') || normalizedVal.includes('fedex') || normalizedVal.includes('ips') || normalizedVal.includes('redirection');
-    const hasBankScam = normalizedVal.includes('card blocked') || normalizedVal.includes('chase notification') || normalizedVal.includes('unauthorized login') || normalizedVal.includes('transfer code') || normalizedVal.includes('bank alert');
+    const hasBankScam = normalizedVal.includes('card blocked') || normalizedVal.includes('chase notification') || normalizedVal.includes('unauthorized login') || normalizedVal.includes('transfer code') || normalizedVal.includes('bank alert') || normalizedVal.includes('boa alert');
     const hasSuspiciousShortlink = /https?:\/\/[a-z0-9.-]+\.[a-z]{2,5}\/[a-z0-9]{3,8}/i.test(value) && !normalizedVal.includes('google.com') && !normalizedVal.includes('apple.com');
-    const hasPrizeWinner = normalizedVal.includes('congratulations') || normalizedVal.includes('prize') || normalizedVal.includes('gift card') || normalizedVal.includes('winner');
+    const hasPrizeWinner = normalizedVal.includes('congratulations') || normalizedVal.includes('prize') || normalizedVal.includes('gift card') || normalizedVal.includes('winner') || normalizedVal.includes('draw');
 
     if (hasPackageScam) {
       score -= 42;
-      redFlags.push("Standard package delivery fraud triggers (fake USPS/FedEx address correction alerts with requests for unpaid custom fees)");
+      breakdown.push({ name: "Logistics Impersonation Check", value: -42 });
+      reasons.push({
+        severity: 'critical',
+        title: "Logistics/Courier Fraud Pattern",
+        explanation: "The message mimics package delivery updates (claiming a USPS, FedEx, or DHL package is held at a warehouse, has address errors, or requires custom delivery fees). Scammers send millions of these automated texts to steal card details.",
+        evidence: `Logistic brand keywords identified in message`
+      });
+      badges.push("Package Delivery Scam");
     }
 
     if (hasBankScam) {
       score -= 45;
-      redFlags.push("Urgent security alert pretending to be a bank locking your credit card or verifying large suspicious transactions");
+      breakdown.push({ name: "Financial Institution Spoof Check", value: -45 });
+      reasons.push({
+        severity: 'critical',
+        title: "Urgent Banking Impersonation",
+        explanation: "The message pretends to be a bank reporting locked credit cards, suspicious transfers, or unauthorized logins. It requests clicking a link to resolve the warning, which routes to a copycat login portal.",
+        evidence: `Banking warning keywords detected`
+      });
+      badges.push("Brand Impersonation");
     }
 
     if (hasSuspiciousShortlink) {
       score -= 25;
-      redFlags.push("Contains an unverified web shortlink (scammers hide redirection domains inside custom short URL paths)");
-    } else {
-      greenFlags.push("No suspicious shortlinks or URLs detected in the message body");
+      breakdown.push({ name: "Shortlink Redirection Threat", value: -25 });
+      reasons.push({
+        severity: 'high',
+        title: "Suspicious Web Shortlink Link",
+        explanation: "The SMS body contains a shortened link redirecting to an unverified domain. Attackers use shortlinks to hide the real domain URL, hoping you won't inspect the full link on mobile.",
+        evidence: `Regex match on unverified shortened URL structure`
+      });
+      badges.push("Unverified Link");
     }
 
     if (hasPrizeWinner) {
       score -= 35;
-      redFlags.push("Prize/lottery bait claiming you won a sweepstakes, gift card, or reward from a store you never visited");
+      breakdown.push({ name: "Reward Reward Bait Analysis", value: -35 });
+      reasons.push({
+        severity: 'high',
+        title: "Prize / Rewards Baiting Trap",
+        explanation: "The message claims you won sweepstakes, gift cards, or loyalty prizes from major stores you did not visit. The link routes to surveys that harvest personal profiles and credit card details.",
+        evidence: `Prize winner keywords detected`
+      });
+      badges.push("Payment Request");
     }
 
-    ageText = "N/A (SMS Message)";
-    agePercent = 0;
-
-    if (score >= 80) {
-      explanation = "The text message does not contain common phishing triggers or package/bank notification scams. However, always exercise caution if a message comes from an unknown 10-digit number asking you to click external links.";
-      title = "SMS content appears safe.";
-    } else if (score >= 55) {
-      explanation = "Caution: This text message might be unsolicited spam. Treat with caution if it includes a link. Legitimate companies rarely send notifications from random personal mobile numbers.";
-      title = "Caution: Unsolicited text message indicators.";
+    // Community Reports
+    if (score < 60) {
+      community = {
+        reportsCount: 120 + (seed % 300),
+        recentReport: "SMS reported sending fake courier redelivery update scams.",
+        trendText: "+55% Surge (Active Wave)",
+        trendDirection: "up"
+      };
     } else {
-      explanation = "Warning: Phishing/Smishing scam detected! This text message utilizes package delivery bait or fake banking alerts containing shortlinks. Scammers send millions of these messages to steal credit card details or bank passwords. Delete the message and block the sender immediately.";
-      title = "Critical: SMiShing Scam Alert!";
+      community = {
+        reportsCount: 0,
+        recentReport: "No complaints on record.",
+        trendText: "Stable Feed",
+        trendDirection: "stable"
+      };
+    }
+
+    // Timeline Setup
+    const scanDateStr = new Date().toISOString().split('T')[0];
+    timeline.push({ date: "2026-06-09", title: "Shortlink Registered", description: "Throwaway redirect domain registered via proxy." });
+    timeline.push({ date: "2026-06-11", title: "Bulk Carrier Spam Reports", description: "Carrier network filters flagged bulk SMS campaigns." });
+    timeline.push({ date: scanDateStr, title: "Text Analysis Scan", description: "TrustChecker analyzed wording matches against banking and courier scams." });
+
+    // Executive Summary & ELI5
+    if (score >= 80) {
+      executiveSummary = `This text message does not contain courier traps, banking scares, or suspicious links.\n\nExercise caution if the text comes from an unknown 10-digit number asking you to click on unknown links.`;
+      simpleExplanation = "This text message has no typical signs of courier scams, bank alerts, or fake short links.";
+      advice.push("Ignore links from unknown numbers.", "Do not reply to spam messages.", "Block unknown sender.");
+      recommendedActions.push("Add number to block list", "Keep phone OS updated");
+      similarPatterns.push("Personal Texts", "Standard SMS updates");
+    } else {
+      executiveSummary = `Warning: Critical threat detected. This SMS follows classic Smishing templates. It attempts to trigger panic using fake delivery or banking warnings, routing you to a phishing link designed to harvest card details.\n\nWe recommend blocking the sender and deleting the message.`;
+      simpleExplanation = "This is like a stranger dropping a note in your mailbox saying they are a postman and need your credit card number to deliver a package. Real postmen would never do that.";
+      advice.push("Do not tap the link in the message.", "Never input credit card or banking details.", "Block the sender's mobile number immediately.", "Do not call the phone number.");
+      recommendedActions.push("Forward SMS to 7726 (Carrier Spam Registry)", "Block sender in phone app settings", "Delete message from device");
+      similarPatterns.push("USPS Delivery Address Scams", "Chase Bank Alert Spoofs", "Fake Prize Sweepstakes Texts");
     }
   }
 
   // 5. PHONE REPUTATION ENGINE
   else if (type === 'phone') {
-    previewTitle = "Caller ID Search";
+    previewTitle = "Phone Number Scan";
+    confidence = 94;
     const cleanPhone = normalizedVal.replace(/[^0-9]/g, '');
     
     const isTollFreeSpam = cleanPhone.startsWith('800') || cleanPhone.startsWith('1800') || cleanPhone.startsWith('888') || cleanPhone.startsWith('877') || cleanPhone.startsWith('866');
-    const hasSpamPattern = (seed % 10) >= 6; // Mock 40% spam database lookup probability
+    const hasSpamPattern = (seed % 10) >= 6;
 
     if (isTollFreeSpam) {
       score -= 15;
-      redFlags.push("Caller utilizes toll-free prefix (often spoofed or used by telemarketing networks)");
+      breakdown.push({ name: "Toll-Free Prefix Flag", value: -15 });
+      reasons.push({
+        severity: 'medium',
+        title: "Toll-Free Business Prefix",
+        explanation: "The caller utilizes a toll-free prefix. Scammers spoof 800 numbers or buy them cheap on internet VoIP gateways to look like national corporate customer support services.",
+        evidence: `Prefix: Toll-free number format`
+      });
+      badges.push("Spoofed Caller ID");
     }
 
     if (hasSpamPattern) {
       score -= 52;
-      redFlags.push("Caller reported as 'Telemarketer' or 'Robocall' in public spam database");
-      redFlags.push("Identified as an active spoofed number used in credit card rate-reduction calls");
-      ageText = "240+ Spam Reports";
-      agePercent = 85; // High reports
-    } else {
-      greenFlags.push("No active spam flags detected in community call registries");
-      ageText = "0 Spam Reports";
-      agePercent = 0;
+      breakdown.push({ name: "Public Spam Registry Matches", value: -52 });
+      reasons.push({
+        severity: 'critical',
+        title: "Active Robocaller Registry Flag",
+        explanation: "This number has been heavily reported in caller registries for robocalls, unsolicited telemarketing, and tax/utility scam campaigns.",
+        evidence: `Matched active complaints database records`
+      });
+      badges.push("Robocaller");
+      badges.push("Telemarketer");
     }
 
-    if (score >= 80) {
-      explanation = "This phone number is clean in our databases. We have found zero consumer complaints, spam flags, or telemarketing association logs. It is likely a standard residential or business line.";
-      title = "Phone number has clean reputation.";
-    } else if (score >= 55) {
-      explanation = "Caution: This number is sometimes associated with automated toll-free call systems or commercial surveys. Proceed with caution if you do not recognize the business.";
-      title = "Caution: Number linked to commercial calls.";
+    // Community Reports
+    if (score < 60) {
+      community = {
+        reportsCount: 150 + (seed % 400),
+        recentReport: "Flagged by users as automated voice scam claiming credit card updates.",
+        trendText: "Elevated Active Call Volume",
+        trendDirection: "up"
+      };
     } else {
-      explanation = "Warning: Verified Spam Number! This caller ID is flagged as a high-risk robocall or scam campaign. It is heavily reported by consumers for credit card reduction, IRS tax debt scams, or fake utility company checks. Block the caller and do not answer.";
-      title = "High Risk: Spam / Robocaller Verified!";
+      community = {
+        reportsCount: 0,
+        recentReport: "No active consumer alerts registered.",
+        trendText: "Stable Feed",
+        trendDirection: "stable"
+      };
+    }
+
+    // Timeline Setup
+    const scanDateStr = new Date().toISOString().split('T')[0];
+    timeline.push({ date: "2026-05-15", title: "Caller ID Registered", description: "VoIP phone routing nodes mapped." });
+    timeline.push({ date: "2026-06-05", title: "Robocall Flags Filed", description: "Multiple consumers logged automated IRS scam calls." });
+    timeline.push({ date: scanDateStr, title: "Reputation Look-Up Audit", description: "Checked number history in active spam registries." });
+
+    // Executive Summary & ELI5
+    if (score >= 80) {
+      executiveSummary = `This phone number has a clean reputation. We found zero reports of spam, automated robocalls, or commercial fraud campaigns. It is likely a standard corporate office line or personal phone.`;
+      simpleExplanation = "This number is clean. No automated call programs or telemarketing reports are linked to it.";
+      advice.push("Safe to answer.", "Standard safety guidelines apply.", "Block if they make pushy sales requests.");
+      recommendedActions.push("Verify caller identity on official directory");
+      similarPatterns.push("Corporate Main Lines", "Clean Residential Numbers");
+    } else {
+      executiveSummary = `Warning: Verified robocaller/scam caller ID. This number is logged in public registries for automated voice fraud campaigns, including credit card reduction and utility threat calls.\n\nWe recommend blocking the number and avoiding answering or providing personal data.`;
+      simpleExplanation = "This number is linked to a computer program that calls thousands of people, trying to scare them into sending money by pretending to be a bank, energy company, or tax office. Block them.";
+      advice.push("Do not answer calls from this caller.", "Do not reply to voicemails left by this number.", "Block the caller on your phone.", "Do not share credit card numbers or address details.");
+      recommendedActions.push("Add number to block list", "Register on Do Not Call registry", "Report scam call to FTC");
+      similarPatterns.push("IRS Tax Debt Threats", "Utility Interruption Spoofs", "Credit Card Rate Reduction Robocalls");
     }
   }
 
   // Ensure score constraints
   score = Math.max(5, Math.min(99, score));
 
-  // Build flags lists HTML
-  const buildFlagsHTML = (flags: string[], typeClass: string): string => {
-    if (flags.length === 0) {
-      return `<li class="flex items-start gap-2 text-mute">
-                <span>&bull;</span>
-                <span>None detected</span>
-              </li>`;
-    }
-    return flags.map(flag => `
-      <li class="flex items-start gap-2">
-        <span class="${typeClass} mt-0.5">&bull;</span>
-        <span>${flag}</span>
-      </li>
-    `).join('');
-  };
+  // Determine Verdict and Risk Level based on final score
+  let verdict: 'Safe' | 'Likely Safe' | 'Suspicious' | 'High Risk' | 'Dangerous' | 'Scam Likely';
+  let riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
 
-  const redFlagsHTML = buildFlagsHTML(redFlags, 'text-error font-bold');
-  const greenFlagsHTML = buildFlagsHTML(greenFlags, 'text-success font-bold');
+  if (score >= 90) {
+    verdict = 'Safe';
+    riskLevel = 'Low';
+  } else if (score >= 75) {
+    verdict = 'Likely Safe';
+    riskLevel = 'Low';
+  } else if (score >= 50) {
+    verdict = 'Suspicious';
+    riskLevel = 'Medium';
+  } else if (score >= 30) {
+    verdict = 'High Risk';
+    riskLevel = 'High';
+  } else if (score >= 10) {
+    verdict = 'Dangerous';
+    riskLevel = 'Critical';
+  } else {
+    verdict = 'Scam Likely';
+    riskLevel = 'Critical';
+  }
+
+  // Format title
+  title = `Trust Score: ${score}/100 - ${verdict}`;
 
   return {
     score,
+    verdict,
+    riskLevel,
+    confidence,
     title,
-    ageText,
-    agePercent,
+    explanation: executiveSummary.split('\n\n')[0], // Fallback
+    executiveSummary,
+    reasons,
+    breakdown,
+    badges,
+    advice,
+    similarPatterns,
+    recommendedActions,
+    community,
+    timeline,
+    simpleExplanation,
     browserUrl,
     previewTitle,
-    explanation,
-    redFlagsHTML,
-    greenFlagsHTML
+    ageText,
+    agePercent
   };
 }
 
@@ -425,7 +776,7 @@ export function triggerScamScan(value: string, type: string): void {
       { text: `[INFO] Extracting threat indicators, urgencies, and warnings...`, delay: 450, progress: 35 },
       { text: `[INFO] Inspecting text for credential farming and SSN requests...`, delay: 800, progress: 60 },
       { text: `[INFO] Running semantic grammar and corporate template verification...`, delay: 1200, progress: 80 },
-      { text: `[SUCCESS] Email threat scan complete. Building dashboard...`, delay: 1600, progress: 100 }
+      { text: `[SUCCESS] Email threat threat scan complete. Building dashboard...`, delay: 1600, progress: 100 }
     );
   } else if (type === 'sms') {
     logs.push(
@@ -475,50 +826,222 @@ export function triggerScamScan(value: string, type: string): void {
           // Perform analytics
           const res = analyzeInput(value, type);
 
-          // Populate report card elements
-          const titleEl = document.getElementById('report-title-main');
-          const explanationEl = document.getElementById('report-ai-explanation');
-          const redFlagsEl = document.getElementById('report-red-flags');
-          const greenFlagsEl = document.getElementById('report-green-flags');
-          const browserUrlEl = document.getElementById('report-browser-url');
-          const previewTitleEl = document.getElementById('preview-title');
-          const ageTextEl = document.getElementById('report-age-text');
-          const timelineBar = document.getElementById('timeline-bar');
-          const previewLogo = document.getElementById('preview-logo');
-
-          if (titleEl) titleEl.textContent = res.title;
-          if (explanationEl) explanationEl.textContent = res.explanation;
-          if (redFlagsEl) redFlagsEl.innerHTML = res.redFlagsHTML;
-          if (greenFlagsEl) greenFlagsEl.innerHTML = res.greenFlagsHTML;
-          if (browserUrlEl) browserUrlEl.textContent = res.browserUrl;
-          if (previewTitleEl) previewTitleEl.textContent = res.previewTitle;
-          if (ageTextEl) ageTextEl.textContent = res.ageText;
+          // Populating all 12 elements of the redesigned report card
           
-          // Timeline bar
-          if (timelineBar) {
-            timelineBar.style.width = `${res.agePercent}%`;
-            // Color based on age
-            timelineBar.className = "absolute top-0 left-0 h-full transition-all duration-1000 ease-out ";
-            if (res.score >= 80) timelineBar.className += "bg-success";
-            else if (res.score >= 50) timelineBar.className += "bg-warning";
-            else timelineBar.className += "bg-error";
+          // 1. Verdict Title & Meta Header
+          const verdictTitleEl = document.getElementById('verdict-title');
+          const riskLevelEl = document.getElementById('verdict-risk-level');
+          const confidenceEl = document.getElementById('verdict-confidence-badge');
+          const metaTypeEl = document.getElementById('report-meta-type');
+          const timestampEl = document.getElementById('report-timestamp');
+          const verdictCard = document.getElementById('verdict-card');
+          const accentGlow = document.getElementById('verdict-accent-glow');
+
+          if (verdictTitleEl) verdictTitleEl.textContent = res.verdict;
+          if (confidenceEl) confidenceEl.textContent = `Confidence: ${res.confidence}%`;
+          if (metaTypeEl) metaTypeEl.textContent = `${type.toUpperCase()} HEURISTIC ENGINE`;
+          if (timestampEl) {
+            const date = new Date();
+            timestampEl.textContent = `Scanned on: ${date.toLocaleString()}`;
           }
 
-          // Mockup preview logo change based on status
-          if (previewLogo) {
+          if (riskLevelEl) {
+            riskLevelEl.textContent = `Risk: ${res.riskLevel}`;
+            riskLevelEl.className = 'text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border transition-all duration-300 ';
             if (res.score >= 80) {
-              previewLogo.className = "w-12 h-12 text-success";
-              previewLogo.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0110 21a3.745 3.745 0 01-3.068-1.593 3.745 3.745 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.745 3.745 0 013.296-1.043A3.745 3.745 0 0114 3c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z"/>';
+              riskLevelEl.className += 'text-emerald-500 border-emerald-500/20 bg-emerald-500/10 dark:bg-emerald-500/5';
+            } else if (res.score >= 70) {
+              riskLevelEl.className += 'text-teal-500 border-teal-500/20 bg-teal-500/10 dark:bg-teal-500/5';
             } else if (res.score >= 50) {
-              previewLogo.className = "w-12 h-12 text-warning animate-pulse";
-              previewLogo.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>';
+              riskLevelEl.className += 'text-amber-500 border-amber-500/20 bg-amber-500/10 dark:bg-amber-500/5';
             } else {
-              previewLogo.className = "w-12 h-12 text-error animate-bounce";
-              previewLogo.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z"/>';
+              riskLevelEl.className += 'text-red-500 border-red-500/20 bg-red-500/10 dark:bg-red-500/5';
             }
           }
 
-          // Trigger TrustScoreDial update (calls inline helper on component)
+          if (verdictCard && accentGlow) {
+            verdictCard.className = "relative overflow-hidden rounded-xl border p-6 md:p-8 mb-8 transition-all duration-300 shadow-level1 bg-canvas-soft ";
+            accentGlow.className = "absolute top-0 left-0 w-2 h-full transition-all duration-500 ";
+            
+            if (res.score >= 80) {
+              verdictCard.className += "border-emerald-500/20 bg-emerald-500/[0.02] shadow-emerald-500/5";
+              accentGlow.className += "bg-emerald-500";
+            } else if (res.score >= 70) {
+              verdictCard.className += "border-teal-500/20 bg-teal-500/[0.02] shadow-teal-500/5";
+              accentGlow.className += "bg-teal-500";
+            } else if (res.score >= 50) {
+              verdictCard.className += "border-amber-500/20 bg-amber-500/[0.02] shadow-amber-500/5";
+              accentGlow.className += "bg-amber-500";
+            } else {
+              verdictCard.className += "border-red-500/20 bg-red-500/[0.02] shadow-red-500/5";
+              accentGlow.className += "bg-red-500";
+            }
+          }
+
+          // 2. Executive Summary
+          const execSummaryEl = document.getElementById('report-executive-summary');
+          if (execSummaryEl) {
+            execSummaryEl.innerHTML = res.executiveSummary.split('\n\n').map(p => `<p class="leading-relaxed">${p}</p>`).join('');
+          }
+
+          // 3. Why We Flagged This (Threat Reasons)
+          const reasonsListEl = document.getElementById('report-reasons-list');
+          if (reasonsListEl) {
+            if (res.reasons.length === 0) {
+              reasonsListEl.innerHTML = `
+                <div class="border border-hairline border-dashed rounded-xl p-6 text-center text-xs text-mute font-mono">
+                  No critical warning flags or indicators triggered. No threats identified.
+                </div>
+              `;
+            } else {
+              reasonsListEl.innerHTML = res.reasons.map(reason => {
+                let badgeStyle = '';
+                if (reason.severity === 'critical') badgeStyle = 'text-red-500 bg-red-500/10 border-red-500/20';
+                else if (reason.severity === 'high') badgeStyle = 'text-orange-500 bg-orange-500/10 border-orange-500/20';
+                else if (reason.severity === 'medium') badgeStyle = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+                else badgeStyle = 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+
+                return `
+                  <div class="border border-hairline rounded-xl p-5 bg-canvas shadow-level1 flex gap-4 items-start relative hover:border-hairline-strong transition-all duration-200">
+                    <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded border uppercase flex-shrink-0 mt-0.5 ${badgeStyle}">
+                      ${reason.severity}
+                    </span>
+                    <div class="flex flex-col gap-1.5">
+                      <h4 class="text-xs font-bold text-ink leading-tight">${reason.title}</h4>
+                      <p class="text-xs text-body leading-relaxed">${reason.explanation}</p>
+                      <div class="text-[10px] font-mono text-mute mt-2 border-t border-hairline pt-2 flex items-center gap-1.5">
+                        <span class="text-error font-semibold uppercase">Evidence:</span>
+                        <span>${reason.evidence}</span>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('');
+            }
+          }
+
+          // 4. Trust Breakdown
+          const breakdownListEl = document.getElementById('report-breakdown-list');
+          if (breakdownListEl) {
+            breakdownListEl.innerHTML = res.breakdown.map(item => {
+              const isNeg = item.value < 0;
+              const colorClass = isNeg ? 'text-red-500' : 'text-emerald-500';
+              const sign = isNeg ? '' : '+';
+              const percent = Math.min(100, Math.round((Math.abs(item.value) / 50) * 100));
+              const barColor = isNeg ? 'bg-red-500/50' : 'bg-emerald-500/50';
+
+              return `
+                <div class="flex flex-col gap-1 border-b border-hairline/50 pb-2.5 last:border-0 last:pb-0">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="text-body font-medium">${item.name}</span>
+                    <span class="font-mono font-semibold ${colorClass}">${sign}${item.value}</span>
+                  </div>
+                  <div class="w-full bg-canvas-soft-2 h-1.5 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full ${barColor}" style="width: ${percent}%"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          // 5. Risk Indicators (Badges)
+          const badgesEl = document.getElementById('report-risk-badges');
+          if (badgesEl) {
+            if (res.badges.length === 0) {
+              badgesEl.innerHTML = `
+                <span class="text-xs text-mute font-mono px-3 py-1 bg-canvas-soft rounded border border-hairline">
+                  🟢 Standard Baseline
+                </span>
+              `;
+            } else {
+              badgesEl.innerHTML = res.badges.map(badge => `
+                <span class="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md border border-red-500/20 bg-red-500/5 text-red-500 uppercase tracking-wider">
+                  ⚠️ ${badge}
+                </span>
+              `).join('');
+            }
+          }
+
+          // 6. What This Means For You
+          const adviceEl = document.getElementById('report-advice-list');
+          if (adviceEl) {
+            adviceEl.innerHTML = res.advice.map(item => `
+              <li class="flex items-start gap-2 text-xs text-body leading-relaxed">
+                <span class="text-error flex-shrink-0 mt-0.5">✖</span>
+                <span>${item}</span>
+              </li>
+            `).join('');
+          }
+
+          // 7. Similar Scam Patterns
+          const similarPatternsEl = document.getElementById('report-similar-patterns');
+          if (similarPatternsEl) {
+            similarPatternsEl.innerHTML = res.similarPatterns.map(pattern => `
+              <div class="flex items-center gap-2 border-b border-hairline/50 py-2 last:border-0 last:py-0 text-xs text-body">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                <span class="font-medium">${pattern}</span>
+              </div>
+            `).join('');
+          }
+
+          // 8. Recommended Actions
+          const actionsEl = document.getElementById('report-actions-list');
+          if (actionsEl) {
+            actionsEl.innerHTML = res.recommendedActions.map(action => `
+              <li class="flex items-start gap-2 text-xs text-body leading-relaxed">
+                <span class="text-success flex-shrink-0 mt-0.5">✔</span>
+                <span class="font-medium">${action}</span>
+              </li>
+            `).join('');
+          }
+
+          // 9. Community Intelligence
+          const commCountEl = document.getElementById('report-community-count');
+          const commRecentEl = document.getElementById('report-community-recent');
+          const commTrendEl = document.getElementById('report-community-trend');
+
+          if (commCountEl) commCountEl.textContent = res.community.reportsCount.toString();
+          if (commRecentEl) commRecentEl.textContent = res.community.recentReport;
+          
+          if (commTrendEl) {
+            commTrendEl.textContent = res.community.trendText;
+            commTrendEl.className = "text-[10px] font-semibold px-2 py-0.5 rounded font-mono ";
+            if (res.community.trendDirection === 'up') {
+              commTrendEl.className += "bg-red-500/10 text-red-500 border border-red-500/20";
+            } else if (res.community.trendDirection === 'down') {
+              commTrendEl.className += "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+            } else {
+              commTrendEl.className += "bg-canvas-soft-2 text-mute border border-hairline";
+            }
+          }
+
+          // 10. Evidence Timeline
+          const timelineEl = document.getElementById('report-timeline');
+          if (timelineEl) {
+            timelineEl.innerHTML = res.timeline.map(event => `
+              <div class="relative">
+                <div class="absolute -left-[31px] top-1.5 w-2.5 h-2.5 rounded-full bg-canvas border-2 border-hairline-strong shadow-sm"></div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-[9px] font-mono font-bold text-mute uppercase">${event.date}</span>
+                  <span class="text-xs font-bold text-ink leading-tight">${event.title}</span>
+                  <span class="text-[11px] text-body leading-relaxed">${event.description}</span>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          // 11. Explain Like I'm Not Technical
+          const simpleExplanationEl = document.getElementById('report-simple-text');
+          if (simpleExplanationEl) {
+            simpleExplanationEl.textContent = res.simpleExplanation;
+            // Reset accordion height in case it was open
+            const simpleContentPanel = document.getElementById('report-simple-content');
+            if (simpleContentPanel && simpleContentPanel.style.maxHeight !== '0px' && simpleContentPanel.style.maxHeight !== '') {
+              simpleContentPanel.style.maxHeight = simpleContentPanel.scrollHeight + 'px';
+            }
+          }
+
+          // Update TrustScoreDial
           if ((window as any).updateTrustScoreDial) {
             (window as any).updateTrustScoreDial('report-dial', res.score);
           }

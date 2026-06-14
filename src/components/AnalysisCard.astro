@@ -8,147 +8,282 @@ interface Props {
 
 const { id = "analysis-report", className = "hidden" } = Astro.props;
 ---
-<div id={id} class={`w-full bg-canvas border border-hairline rounded-lg p-6 md:p-8 shadow-level3 relative overflow-hidden transition-all duration-500 ${className}`}>
-  <!-- Vercel accent atmospheric light inside the card -->
-  <div class="absolute top-0 right-0 w-64 h-64 bg-link/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
+<div id={id} class={`w-full bg-canvas border border-hairline rounded-xl p-6 md:p-10 shadow-level4 relative overflow-hidden transition-all duration-500 ${className}`}>
+  <!-- Vercel accent atmospheric lights for security dashboard look -->
+  <div class="absolute top-0 right-0 w-80 h-80 bg-link/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
+  <div class="absolute bottom-0 left-0 w-80 h-80 bg-error/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
 
-  <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
-    <!-- Left Column: Metrics and Visualizers -->
-    <div class="w-full lg:w-5/12 flex flex-col gap-6">
-      <div class="flex flex-col items-center border-b border-hairline pb-6">
-        <h3 class="text-xs font-mono tracking-widest text-mute mb-4 uppercase">AI RISK ASSESSMENT</h3>
-        <!-- Reuse the TrustScoreDial -->
+  <!-- 1. Trust Verdict Section (Top Header Banner) -->
+  <div id="verdict-card" class="relative overflow-hidden rounded-xl border border-hairline p-6 md:p-8 mb-8 bg-canvas-soft transition-all duration-300 shadow-level1">
+    <!-- Glow element that updates background based on safety level -->
+    <div id="verdict-accent-glow" class="absolute top-0 left-0 w-2 h-full bg-mute transition-all duration-500"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+      <!-- Verdict & Risk Label -->
+      <div class="flex flex-col gap-2 text-center lg:text-left">
+        <span class="caption-mono text-mute text-[10px] tracking-widest font-bold">ANALYSIS VERDICT</span>
+        <h2 id="verdict-title" class="text-3xl md:text-4xl font-extrabold tracking-tight text-ink transition-all duration-500">
+          Analyzing Content...
+        </h2>
+        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 mt-1">
+          <span id="verdict-risk-level" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border">
+            Risk: --
+          </span>
+          <span id="verdict-confidence-badge" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border bg-canvas-soft-2">
+            Confidence: --
+          </span>
+        </div>
+      </div>
+
+      <!-- Dial score visualizer -->
+      <div class="flex flex-col items-center justify-center">
         <TrustScoreDial id="report-dial" score={0} size={150} />
       </div>
 
-      <!-- Domain Age Timeline Visualizer -->
-      <div class="flex flex-col gap-3" id="timeline-container">
-        <div class="flex items-center justify-between text-xs">
-          <span class="text-body font-mono">DOMAIN / ENTITY AGE</span>
-          <span class="text-ink font-semibold font-mono" id="report-age-text">Unknown</span>
+      <!-- Technical Metadata -->
+      <div class="flex flex-col gap-2 items-center lg:items-end text-center lg:text-right text-xs">
+        <div>
+          <span class="caption-mono text-mute text-[10px] block mb-1">SCAN METHODOLOGY</span>
+          <span id="report-meta-type" class="font-semibold font-mono text-ink bg-canvas-soft-2 border border-hairline px-3 py-1 rounded-md">
+            HEURISTIC ENGINE
+          </span>
         </div>
-        <div class="relative w-full h-2 bg-canvas-soft-2 border border-hairline rounded-full overflow-hidden">
-          <div id="timeline-bar" class="absolute top-0 left-0 h-full w-0 bg-success transition-all duration-1000 ease-out"></div>
-        </div>
-        <div class="flex justify-between text-[10px] font-mono text-mute">
-          <span>Fresh (0 days)</span>
-          <span>1 Year</span>
-          <span>5+ Years</span>
-        </div>
-      </div>
-
-      <!-- Website Screenshot Mockup / Entity Card -->
-      <div class="flex flex-col gap-3" id="screenshot-container">
-        <span class="text-xs font-mono text-body">PREVIEW MOCKUP</span>
-        <div class="w-full aspect-video bg-canvas-soft-2 border border-hairline rounded-md overflow-hidden relative flex flex-col shadow-level1">
-          <!-- Browser Header Bar -->
-          <div class="h-6 bg-canvas border-b border-hairline px-3 flex items-center gap-1.5 select-none">
-            <span class="w-2 h-2 rounded-full bg-red-400"></span>
-            <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
-            <span class="w-2 h-2 rounded-full bg-green-400"></span>
-            <div class="h-4 flex-grow bg-canvas-soft border border-hairline rounded text-[8px] text-mute flex items-center justify-center font-mono overflow-hidden mx-4 px-2" id="report-browser-url">
-              loading...
-            </div>
-          </div>
-          <!-- Browser Content -->
-          <div class="flex-grow flex items-center justify-center p-4 relative bg-canvas">
-            <div class="text-center flex flex-col items-center gap-2">
-              <svg class="w-12 h-12 text-mute animate-pulse-slow" id="preview-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
-              </svg>
-              <span class="text-xs font-semibold text-body" id="preview-title">Analyzing content...</span>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-canvas via-transparent to-transparent opacity-60"></div>
-          </div>
+        <div class="mt-2 text-mute font-mono text-[10px]">
+          <div id="report-timestamp">Scanned on: --</div>
+          <div class="text-[9px] text-success font-semibold tracking-wider mt-0.5">TRUSTCHECKER FORENSIC SUITE v4.2</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Right Column: Explanations and Factor Lists -->
-    <div class="w-full lg:w-7/12 flex flex-col gap-6">
-      <div class="flex flex-col gap-2">
-        <h4 class="text-lg font-semibold tracking-tight text-ink" id="report-title-main">Scam Report Summary</h4>
-        <div class="flex items-center gap-2 mt-1">
-          <span class="text-xs font-mono text-mute" id="report-timestamp">Scan performed just now</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
-          <span class="text-[10px] font-mono text-success font-semibold tracking-wider">AI DIAGNOSIS SYSTEM v4</span>
-        </div>
-      </div>
-
-      <!-- Plain English AI Explanation -->
-      <div class="bg-canvas-soft-2 border border-hairline rounded-md p-4 flex flex-col gap-2 relative">
-        <span class="text-[10px] font-mono font-semibold tracking-widest text-mute">AI EXPLANATION</span>
-        <p class="text-sm text-body leading-relaxed" id="report-ai-explanation">
-          Analyzing the submitted content. Please wait...
-        </p>
-      </div>
-
-      <!-- Red Flags (Risk Factors) & Green Flags (Trust Signals) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-        <!-- Red Flags -->
-        <div class="flex flex-col gap-3">
-          <div class="flex items-center gap-2 text-error font-semibold text-xs font-mono">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <span>RED FLAGS (RISK FACTORS)</span>
-          </div>
-          <ul class="flex flex-col gap-2 text-xs text-body" id="report-red-flags">
-            <!-- Populated via Javascript -->
-          </ul>
-        </div>
-
-        <!-- Green Flags -->
-        <div class="flex flex-col gap-3">
-          <div class="flex items-center gap-2 text-success font-semibold text-xs font-mono">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <span>GREEN FLAGS (TRUST SIGNALS)</span>
-          </div>
-          <ul class="flex flex-col gap-2 text-xs text-body" id="report-green-flags">
-            <!-- Populated via Javascript -->
-          </ul>
-        </div>
-      </div>
-
-      <!-- Action Panel -->
-      <div class="border-t border-hairline pt-6 flex flex-wrap items-center justify-between gap-4 mt-auto">
-        <button id="report-share-btn" class="h-9 px-4 inline-flex items-center justify-center gap-2 border border-hairline hover:bg-canvas-soft rounded-full text-xs font-medium text-ink transition-colors cursor-pointer">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l4.838-2.42m0 7.356l-4.838-2.42m5.602-5.96a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0zm-12 4a3 3 0 11-6 0 3 3 0 016 0z" />
+  <!-- Main Grid Layout for the report sections -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
+    <!-- Left Column: Core findings & scoring (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col gap-8">
+      
+      <!-- 2. Executive Summary -->
+      <div class="flex flex-col gap-3 border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1">
+        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
+          <svg class="w-4.5 h-4.5 text-link" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          Share Report
-        </button>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-success"></span>
-          <span class="text-xs text-mute font-mono">100% Confidential Scan</span>
+          <span>EXECUTIVE SUMMARY</span>
+        </div>
+        <div id="report-executive-summary" class="text-sm text-body leading-relaxed flex flex-col gap-3">
+          <p>Analyzing the submitted content data in real-time. Please wait a moment...</p>
         </div>
       </div>
+
+      <!-- 3. Why We Flagged This -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
+          <svg class="w-4.5 h-4.5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>WHY WE FLAGGED THIS (THREAT FINDINGS)</span>
+        </div>
+        <div id="report-reasons-list" class="flex flex-col gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 4. Trust Breakdown -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
+          <svg class="w-4.5 h-4.5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>TRUST SCORE BREAKDOWN</span>
+        </div>
+        <div class="border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1 flex flex-col gap-4">
+          <p class="text-xs text-mute font-mono">This timeline visualizes the mathematical factors contributing to the overall trust calculation:</p>
+          <div id="report-breakdown-list" class="flex flex-col gap-3">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Evidence Timeline -->
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
+          <svg class="w-4.5 h-4.5 text-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>EVIDENCE TIMELINE</span>
+        </div>
+        <div class="border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1">
+          <div id="report-timeline" class="relative border-l-2 border-hairline pl-6 ml-2 flex flex-col gap-6">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Badges, Advice, Community, Share (5 Cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-8">
+      
+      <!-- 5. Risk Indicators (Badges) -->
+      <div class="flex flex-col gap-3">
+        <span class="text-[10px] font-mono tracking-widest font-bold text-mute">RISK DETECTOR TAGS</span>
+        <div id="report-risk-badges" class="flex flex-wrap gap-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 6. What This Means For You -->
+      <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono uppercase tracking-wider">
+          <svg class="w-4 h-4 text-error-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span>WHAT THIS MEANS FOR YOU</span>
+        </div>
+        <ul id="report-advice-list" class="flex flex-col gap-2.5 text-xs text-body">
+          <!-- Populated dynamically -->
+        </ul>
+      </div>
+
+      <!-- 7. Similar Scam Patterns -->
+      <div class="flex flex-col gap-3">
+        <span class="text-[10px] font-mono tracking-widest font-bold text-mute">SIMILAR SCAM PATTERNS</span>
+        <div id="report-similar-patterns" class="flex flex-col gap-2 text-xs text-body bg-canvas-soft border border-hairline rounded-xl p-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 8. Recommended Actions -->
+      <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono uppercase tracking-wider">
+          <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          <span>RECOMMENDED NEXT ACTIONS</span>
+        </div>
+        <ul id="report-actions-list" class="flex flex-col gap-2 text-xs text-body">
+          <!-- Populated dynamically -->
+        </ul>
+      </div>
+
+      <!-- 9. Community Intelligence -->
+      <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
+        <div class="flex items-center justify-between text-ink font-semibold text-xs font-mono uppercase tracking-wider border-b border-hairline pb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>COMMUNITY INTELLIGENCE</span>
+          </div>
+          <span id="report-community-trend" class="text-[10px] font-semibold px-2 py-0.5 rounded font-mono">--</span>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 text-center py-2">
+          <div class="border-r border-hairline pr-2">
+            <span id="report-community-count" class="text-3xl font-extrabold font-mono text-ink">--</span>
+            <span class="text-[9px] font-mono text-mute block mt-1">USER REPORTS FILED</span>
+          </div>
+          <div class="pl-2">
+            <span id="report-community-recent" class="text-sm font-semibold text-ink line-clamp-2 leading-snug">--</span>
+            <span class="text-[9px] font-mono text-mute block mt-1">RECENT REPUTATION REPORT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Explain Like I'm Not Technical (Collapsible Accordion) -->
+      <div class="border border-hairline rounded-xl bg-canvas overflow-hidden shadow-level2">
+        <button id="report-simple-toggle" class="w-full px-5 py-4 flex items-center justify-between hover:bg-canvas-soft transition-all text-left focus:outline-none cursor-pointer">
+          <span class="text-xs font-mono font-bold text-ink uppercase tracking-wider">💡 Explain Like I'm Not Technical</span>
+          <svg id="report-simple-arrow" class="w-4 h-4 text-mute transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="report-simple-content" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+          <p id="report-simple-text" class="px-5 pb-5 text-xs text-body leading-relaxed bg-canvas-soft-2/50 pt-2 border-t border-hairline font-sans">
+            Initializing explanation details...
+          </p>
+        </div>
+      </div>
+
+      <!-- 12. Shareable Report Card -->
+      <div class="border border-hairline rounded-xl p-5 bg-canvas shadow-level2 flex flex-col gap-4">
+        <span class="text-[10px] font-mono tracking-widest font-bold text-mute uppercase">SHAREABLE THREAT REPORT CARD</span>
+        <p class="text-xs text-body leading-relaxed">Share this verified cybersecurity intelligence diagnosis with others to prevent active phishing or scam victimization.</p>
+        
+        <div class="flex gap-2">
+          <button id="report-share-copy-btn" class="flex-grow h-10 px-4 inline-flex items-center justify-center gap-2 border border-hairline hover:bg-canvas-soft rounded-lg text-xs font-semibold text-ink transition-colors cursor-pointer select-none">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l4.838-2.42m0 7.356l-4.838-2.42m5.602-5.96a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0zm-12 4a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Copy Report Link
+          </button>
+          
+          <button id="report-share-embed-btn" class="h-10 px-4 inline-flex items-center justify-center border border-hairline hover:bg-canvas-soft rounded-lg text-xs font-semibold text-ink transition-colors cursor-pointer select-none">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="embed-code-box" class="hidden flex-col gap-1.5 mt-2">
+          <span class="text-[9px] font-mono text-mute">IFRAME EMBED EMBED CODE</span>
+          <textarea id="embed-code-textarea" readonly class="w-full text-[10px] font-mono p-2 border border-hairline rounded bg-canvas-soft-2 h-16 resize-none focus:outline-none"></textarea>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
 <script is:inline>
-  // Setup share button click
-  const shareBtn = document.getElementById('report-share-btn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', () => {
+  // Add Accordion logic directly inside component context so it is available client-side immediately
+  const toggleBtn = document.getElementById('report-simple-toggle');
+  const panel = document.getElementById('report-simple-content');
+  const arrow = document.getElementById('report-simple-arrow');
+
+  if (toggleBtn && panel && arrow) {
+    toggleBtn.addEventListener('click', () => {
+      if (panel.style.maxHeight && panel.style.maxHeight !== '0px') {
+        panel.style.maxHeight = '0px';
+        arrow.style.transform = 'rotate(0deg)';
+      } else {
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+        arrow.style.transform = 'rotate(180deg)';
+      }
+    });
+  }
+
+  // Copy Link functionality
+  const shareCopyBtn = document.getElementById('report-share-copy-btn');
+  if (shareCopyBtn) {
+    shareCopyBtn.addEventListener('click', () => {
       const shareUrl = window.location.href.split('?')[0] + '?scan=' + encodeURIComponent(window.lastScanValue || 'report');
       navigator.clipboard.writeText(shareUrl).then(() => {
-        const originalText = shareBtn.innerHTML;
-        shareBtn.innerHTML = `
+        const originalText = shareCopyBtn.innerHTML;
+        shareCopyBtn.innerHTML = `
           <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-          Copied Link!
+          Link Copied!
         `;
         setTimeout(() => {
-          shareBtn.innerHTML = originalText;
+          shareCopyBtn.innerHTML = originalText;
         }, 2000);
       }).catch(err => {
         console.error('Failed to copy text: ', err);
       });
+    });
+  }
+
+  // Embed box toggle functionality
+  const shareEmbedBtn = document.getElementById('report-share-embed-btn');
+  const embedCodeBox = document.getElementById('embed-code-box');
+  const embedCodeTextarea = document.getElementById('embed-code-textarea');
+  if (shareEmbedBtn && embedCodeBox && embedCodeTextarea) {
+    shareEmbedBtn.addEventListener('click', () => {
+      embedCodeBox.classList.toggle('hidden');
+      const shareUrl = window.location.href.split('?')[0] + '?scan=' + encodeURIComponent(window.lastScanValue || 'report');
+      embedCodeTextarea.value = `<iframe src="${shareUrl}" width="100%" height="600" style="border:1px solid #eee;border-radius:8px;"></iframe>`;
+      embedCodeTextarea.select();
     });
   }
 </script>
