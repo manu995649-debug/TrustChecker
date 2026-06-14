@@ -9,42 +9,41 @@ interface Props {
 const { id = "analysis-report", className = "hidden" } = Astro.props;
 ---
 <div id={id} class={`w-full bg-canvas border border-hairline rounded-xl p-6 md:p-10 shadow-level4 relative overflow-hidden transition-all duration-500 ${className}`}>
-  <!-- Vercel accent atmospheric lights for security dashboard look -->
+  <!-- Professional accent atmospheric lights -->
   <div class="absolute top-0 right-0 w-80 h-80 bg-link/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
   <div class="absolute bottom-0 left-0 w-80 h-80 bg-error/5 blur-3xl pointer-events-none -z-10 rounded-full"></div>
 
-  <!-- 1. Trust Verdict Section (Top Header Banner) -->
+  <!-- SECTION 1 — FINAL VERDICT (Top Header Card) -->
   <div id="verdict-card" class="relative overflow-hidden rounded-xl border border-hairline p-6 md:p-8 mb-8 bg-canvas-soft transition-all duration-300 shadow-level1">
-    <!-- Glow element that updates background based on safety level -->
-    <div id="verdict-accent-glow" class="absolute top-0 left-0 w-2 h-full bg-mute transition-all duration-500"></div>
+    <div id="verdict-accent-glow" class="absolute top-0 left-0 w-2.5 h-full bg-mute transition-all duration-500"></div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-      <!-- Verdict & Risk Label -->
-      <div class="flex flex-col gap-2 text-center lg:text-left">
-        <span class="caption-mono text-mute text-[10px] tracking-widest font-bold">ANALYSIS VERDICT</span>
+      <!-- Verdict String, Risk & Confidence -->
+      <div class="flex flex-col gap-2.5 text-center lg:text-left">
+        <span class="caption-mono text-mute text-[10px] tracking-widest font-extrabold uppercase">SECURITY VERDICT REPORT</span>
         <h2 id="verdict-title" class="text-3xl md:text-4xl font-extrabold tracking-tight text-ink transition-all duration-500">
-          Analyzing Content...
+          Analyzing...
         </h2>
         <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 mt-1">
           <span id="verdict-risk-level" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border">
             Risk: --
           </span>
-          <span id="verdict-confidence-badge" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border bg-canvas-soft-2">
+          <span id="verdict-confidence-badge" class="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full border bg-canvas-soft-2 text-mute">
             Confidence: --
           </span>
         </div>
       </div>
 
-      <!-- Dial score visualizer -->
+      <!-- Trust Score Dial -->
       <div class="flex flex-col items-center justify-center">
         <TrustScoreDial id="report-dial" score={0} size={150} />
       </div>
 
-      <!-- Technical Metadata -->
+      <!-- Metadata & Versioning -->
       <div class="flex flex-col gap-2 items-center lg:items-end text-center lg:text-right text-xs">
         <div>
           <span class="caption-mono text-mute text-[10px] block mb-1">SCAN METHODOLOGY</span>
-          <span id="report-meta-type" class="font-semibold font-mono text-ink bg-canvas-soft-2 border border-hairline px-3 py-1 rounded-md">
+          <span id="report-meta-type" class="font-bold font-mono text-ink bg-canvas-soft-2 border border-hairline px-3 py-1 rounded-md">
             HEURISTIC ENGINE
           </span>
         </div>
@@ -56,165 +55,182 @@ const { id = "analysis-report", className = "hidden" } = Astro.props;
     </div>
   </div>
 
-  <!-- Main Grid Layout for the report sections -->
+  <!-- Main Grid Layout -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
-    <!-- Left Column: Core findings & scoring (7 Cols) -->
-    <div class="lg:col-span-7 flex flex-col gap-8">
+    <!-- Left Column: Summary, Evidence, Risk Breakdown, Red Flags (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col gap-8 md:gap-10">
       
-      <!-- 2. Executive Summary -->
+      <!-- SECTION 2 — EXECUTIVE SUMMARY -->
       <div class="flex flex-col gap-3 border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1">
-        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
-          <svg class="w-4.5 h-4.5 text-link" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono tracking-wider border-b border-hairline pb-3">
+          <svg class="w-4 h-4 text-link" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <span>EXECUTIVE SUMMARY</span>
+          <span>SECTION 2 — EXECUTIVE SUMMARY</span>
         </div>
-        <div id="report-executive-summary" class="text-sm text-body leading-relaxed flex flex-col gap-3">
-          <p>Analyzing the submitted content data in real-time. Please wait a moment...</p>
+        <div id="report-executive-summary" class="text-xs md:text-sm text-body leading-relaxed flex flex-col gap-3">
+          <p>Running the analysis engine...</p>
         </div>
       </div>
 
-      <!-- 3. Why We Flagged This -->
+      <!-- SECTION 3 — EVIDENCE -->
       <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
-          <svg class="w-4.5 h-4.5 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono tracking-wider border-b border-hairline pb-3">
+          <svg class="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span>WHY WE FLAGGED THIS (THREAT FINDINGS)</span>
+          <span>SECTION 3 — FORENSIC EVIDENCE</span>
         </div>
-        <div id="report-reasons-list" class="flex flex-col gap-4">
+        <div id="report-findings-list" class="flex flex-col gap-4">
           <!-- Populated dynamically -->
         </div>
       </div>
 
-      <!-- 4. Trust Breakdown -->
+      <!-- SECTION 4 — RISK BREAKDOWN -->
       <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
-          <svg class="w-4.5 h-4.5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono tracking-wider border-b border-hairline pb-3">
+          <svg class="w-4 h-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
-          <span>TRUST SCORE BREAKDOWN</span>
+          <span>SECTION 4 — RISK BREAKDOWN</span>
         </div>
-        <div class="border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1 flex flex-col gap-4">
-          <p class="text-xs text-mute font-mono">This timeline visualizes the mathematical factors contributing to the overall trust calculation:</p>
-          <div id="report-breakdown-list" class="flex flex-col gap-3">
-            <!-- Populated dynamically -->
+        <div class="border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1 flex flex-col gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-hairline pb-6">
+            <!-- Positive Signals -->
+            <div class="flex flex-col gap-3">
+              <span class="text-[10px] font-mono font-bold text-success tracking-wider uppercase border-b border-success/10 pb-1">➕ POSITIVE SIGNALS</span>
+              <ul id="report-positive-signals" class="flex flex-col gap-2 text-xs">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+            
+            <!-- Negative Signals -->
+            <div class="flex flex-col gap-3">
+              <span class="text-[10px] font-mono font-bold text-error tracking-wider uppercase border-b border-error/10 pb-1">➖ NEGATIVE SIGNALS</span>
+              <ul id="report-negative-signals" class="flex flex-col gap-2 text-xs">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-3">
+            <span class="text-[10px] font-mono font-bold text-mute tracking-wider uppercase">SCORE CALCULATION STEPS</span>
+            <div id="report-calculations-list" class="flex flex-col gap-3">
+              <!-- Populated dynamically -->
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 10. Evidence Timeline -->
+      <!-- SECTION 5 — RED FLAGS -->
       <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2 text-ink font-semibold text-sm font-mono border-b border-hairline pb-3">
-          <svg class="w-4.5 h-4.5 text-violet" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono tracking-wider border-b border-hairline pb-3">
+          <svg class="w-4 h-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span>EVIDENCE TIMELINE</span>
+          <span>SECTION 5 — RED FLAG CARDS</span>
         </div>
-        <div class="border border-hairline rounded-xl p-5 md:p-6 bg-canvas shadow-level1">
-          <div id="report-timeline" class="relative border-l-2 border-hairline pl-6 ml-2 flex flex-col gap-6">
-            <!-- Populated dynamically -->
-          </div>
+        <div id="report-red-flags-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically as visual warning cards -->
         </div>
       </div>
 
     </div>
 
-    <!-- Right Column: Badges, Advice, Community, Share (5 Cols) -->
+    <!-- Right Column: What It Means, Matched Patterns, Actions, Community, Simple, Share (5 Cols) -->
     <div class="lg:col-span-5 flex flex-col gap-8">
       
-      <!-- 5. Risk Indicators (Badges) -->
-      <div class="flex flex-col gap-3">
-        <span class="text-[10px] font-mono tracking-widest font-bold text-mute">RISK DETECTOR TAGS</span>
-        <div id="report-risk-badges" class="flex flex-wrap gap-2">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <!-- 6. What This Means For You -->
+      <!-- SECTION 6 — WHAT THIS MEANS FOR YOU -->
       <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
         <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono uppercase tracking-wider">
           <svg class="w-4 h-4 text-error-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <span>WHAT THIS MEANS FOR YOU</span>
+          <span>SECTION 6 — WHAT THIS MEANS FOR YOU</span>
         </div>
-        <ul id="report-advice-list" class="flex flex-col gap-2.5 text-xs text-body">
-          <!-- Populated dynamically -->
-        </ul>
-      </div>
-
-      <!-- 7. Similar Scam Patterns -->
-      <div class="flex flex-col gap-3">
-        <span class="text-[10px] font-mono tracking-widest font-bold text-mute">SIMILAR SCAM PATTERNS</span>
-        <div id="report-similar-patterns" class="flex flex-col gap-2 text-xs text-body bg-canvas-soft border border-hairline rounded-xl p-4">
-          <!-- Populated dynamically -->
+        <div id="report-what-it-means" class="flex flex-col gap-4">
+          <!-- Populated dynamically with advice + consequences -->
         </div>
       </div>
 
-      <!-- 8. Recommended Actions -->
+      <!-- SECTION 7 — MATCHED SCAM PATTERNS -->
+      <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
+        <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono uppercase tracking-wider">
+          <svg class="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+          </svg>
+          <span>SECTION 7 — MATCHED SCAM PATTERNS</span>
+        </div>
+        <div id="report-matched-patterns" class="flex flex-col gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- SECTION 8 — RECOMMENDED ACTIONS -->
       <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
         <div class="flex items-center gap-2 text-ink font-semibold text-xs font-mono uppercase tracking-wider">
           <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
           </svg>
-          <span>RECOMMENDED NEXT ACTIONS</span>
+          <span>SECTION 8 — RECOMMENDED ACTIONS</span>
         </div>
-        <ul id="report-actions-list" class="flex flex-col gap-2 text-xs text-body">
+        <div id="report-recommended-actions" class="flex flex-col gap-4">
           <!-- Populated dynamically -->
-        </ul>
+        </div>
       </div>
 
-      <!-- 9. Community Intelligence -->
+      <!-- SECTION 9 — COMMUNITY INTELLIGENCE -->
       <div class="flex flex-col gap-4 border border-hairline rounded-xl p-5 bg-canvas shadow-level1">
         <div class="flex items-center justify-between text-ink font-semibold text-xs font-mono uppercase tracking-wider border-b border-hairline pb-3">
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <span>COMMUNITY INTELLIGENCE</span>
+            <span>SECTION 9 — COMMUNITY INTEL</span>
           </div>
           <span id="report-community-trend" class="text-[10px] font-semibold px-2 py-0.5 rounded font-mono">--</span>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 text-center py-2">
-          <div class="border-r border-hairline pr-2">
+        <div class="flex flex-col gap-4">
+          <div class="text-center py-2 bg-canvas-soft rounded-lg border border-hairline">
             <span id="report-community-count" class="text-3xl font-extrabold font-mono text-ink">--</span>
-            <span class="text-[9px] font-mono text-mute block mt-1">USER REPORTS FILED</span>
+            <span class="text-[9px] font-mono text-mute block mt-1 uppercase tracking-wider">Verified Customer Reports On File</span>
           </div>
-          <div class="pl-2">
-            <span id="report-community-recent" class="text-sm font-semibold text-ink line-clamp-2 leading-snug">--</span>
-            <span class="text-[9px] font-mono text-mute block mt-1">RECENT REPUTATION REPORT</span>
+          
+          <div class="flex flex-col gap-2.5">
+            <span class="text-[9px] font-mono text-mute uppercase font-bold tracking-wider">Social Proof / Feedback:</span>
+            <div id="report-complaints-list" class="flex flex-col gap-2">
+              <!-- Populated dynamically as speech bubbles -->
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 11. Explain Like I'm Not Technical (Collapsible Accordion) -->
+      <!-- SECTION 10 — SIMPLE EXPLANATION -->
       <div class="border border-hairline rounded-xl bg-canvas overflow-hidden shadow-level2">
-        <button id="report-simple-toggle" class="w-full px-5 py-4 flex items-center justify-between hover:bg-canvas-soft transition-all text-left focus:outline-none cursor-pointer">
-          <span class="text-xs font-mono font-bold text-ink uppercase tracking-wider">💡 Explain Like I'm Not Technical</span>
-          <svg id="report-simple-arrow" class="w-4 h-4 text-mute transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div id="report-simple-content" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-          <p id="report-simple-text" class="px-5 pb-5 text-xs text-body leading-relaxed bg-canvas-soft-2/50 pt-2 border-t border-hairline font-sans">
-            Initializing explanation details...
+        <div class="px-5 py-4 border-b border-hairline bg-canvas-soft flex items-center gap-2">
+          <span class="text-[11px] font-mono font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+            💡 SECTION 10 — Explain Like I'm Not Technical
+          </span>
+        </div>
+        <div class="p-5">
+          <p id="report-simple-text" class="text-xs text-body leading-relaxed font-sans">
+            Analyzing...
           </p>
         </div>
       </div>
 
-      <!-- 12. Shareable Report Card -->
+      <!-- SECTION 11 — SHAREABLE REPORT -->
       <div class="border border-hairline rounded-xl p-5 bg-canvas shadow-level2 flex flex-col gap-4">
-        <span class="text-[10px] font-mono tracking-widest font-bold text-mute uppercase">SHAREABLE THREAT REPORT CARD</span>
-        <p class="text-xs text-body leading-relaxed">Share this verified cybersecurity intelligence diagnosis with others to prevent active phishing or scam victimization.</p>
+        <span class="text-[10px] font-mono tracking-widest font-bold text-mute uppercase">SECTION 11 — SHAREABLE REPORT CARD</span>
+        <p class="text-xs text-body leading-relaxed">Share this cybersecurity threat intelligence record with colleagues or family to raise alert profiles.</p>
         
         <div class="flex gap-2">
           <button id="report-share-copy-btn" class="flex-grow h-10 px-4 inline-flex items-center justify-center gap-2 border border-hairline hover:bg-canvas-soft rounded-lg text-xs font-semibold text-ink transition-colors cursor-pointer select-none">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l4.838-2.42m0 7.356l-4.838-2.42m5.602-5.96a3 3 0 11-6 0 3 3 0 016 0zm6 8a3 3 0 11-6 0 3 3 0 016 0zm-12 4a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Copy Report Link
+            Copy Threat Report Link
           </button>
           
           <button id="report-share-embed-btn" class="h-10 px-4 inline-flex items-center justify-center border border-hairline hover:bg-canvas-soft rounded-lg text-xs font-semibold text-ink transition-colors cursor-pointer select-none">
@@ -224,9 +240,9 @@ const { id = "analysis-report", className = "hidden" } = Astro.props;
           </button>
         </div>
 
-        <div id="embed-code-box" class="hidden flex-col gap-1.5 mt-2">
-          <span class="text-[9px] font-mono text-mute">IFRAME EMBED EMBED CODE</span>
-          <textarea id="embed-code-textarea" readonly class="w-full text-[10px] font-mono p-2 border border-hairline rounded bg-canvas-soft-2 h-16 resize-none focus:outline-none"></textarea>
+        <div id="embed-code-box" class="hidden flex-col gap-1.5 mt-2 animate-fade-in">
+          <span class="text-[9px] font-mono text-mute uppercase">iFrame Embedding HTML</span>
+          <textarea id="embed-code-textarea" readonly class="w-full text-[10px] font-mono p-2.5 border border-hairline rounded bg-canvas-soft-2 h-16 resize-none focus:outline-none"></textarea>
         </div>
       </div>
 
@@ -235,23 +251,6 @@ const { id = "analysis-report", className = "hidden" } = Astro.props;
 </div>
 
 <script is:inline>
-  // Add Accordion logic directly inside component context so it is available client-side immediately
-  const toggleBtn = document.getElementById('report-simple-toggle');
-  const panel = document.getElementById('report-simple-content');
-  const arrow = document.getElementById('report-simple-arrow');
-
-  if (toggleBtn && panel && arrow) {
-    toggleBtn.addEventListener('click', () => {
-      if (panel.style.maxHeight && panel.style.maxHeight !== '0px') {
-        panel.style.maxHeight = '0px';
-        arrow.style.transform = 'rotate(0deg)';
-      } else {
-        panel.style.maxHeight = panel.scrollHeight + 'px';
-        arrow.style.transform = 'rotate(180deg)';
-      }
-    });
-  }
-
   // Copy Link functionality
   const shareCopyBtn = document.getElementById('report-share-copy-btn');
   if (shareCopyBtn) {
@@ -263,7 +262,7 @@ const { id = "analysis-report", className = "hidden" } = Astro.props;
           <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-          Link Copied!
+          Copied successfully!
         `;
         setTimeout(() => {
           shareCopyBtn.innerHTML = originalText;
@@ -282,7 +281,7 @@ const { id = "analysis-report", className = "hidden" } = Astro.props;
     shareEmbedBtn.addEventListener('click', () => {
       embedCodeBox.classList.toggle('hidden');
       const shareUrl = window.location.href.split('?')[0] + '?scan=' + encodeURIComponent(window.lastScanValue || 'report');
-      embedCodeTextarea.value = `<iframe src="${shareUrl}" width="100%" height="600" style="border:1px solid #eee;border-radius:8px;"></iframe>`;
+      embedCodeTextarea.value = `<iframe src="${shareUrl}" width="100%" height="800" style="border:1px solid #eaeaea;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.03);"></iframe>`;
       embedCodeTextarea.select();
     });
   }
