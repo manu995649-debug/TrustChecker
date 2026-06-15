@@ -49,6 +49,7 @@ export interface DetailedAnalysisResult {
   previewTitle: string;
   ageText: string;
   agePercent: number;
+  isAI?: boolean;
 }
 
 // Custom heuristic analysis (Offline Fallback Engine)
@@ -56,7 +57,7 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
   const normalizedVal = value.toLowerCase().trim();
   const seed = hashString(normalizedVal);
   
-  let score = 90; // Default baseline score (out of 100)
+  let score = 100; // Baseline score starts at 100
   let confidence = 94; // Baseline confidence (0-100)
   let browserUrl = "https://www.google.com";
   let previewTitle = "Legitimate Page";
@@ -84,8 +85,6 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
   };
   let title = "";
 
-  scoreBreakdown.push({ name: "Core Threat Baseline Check", value: 90 });
-
   // 1. WEBSITE & ONLINE STORE HEURISTICS
   if (type === 'website' || type === 'store') {
     let domain = normalizedVal.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
@@ -102,10 +101,10 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
     const matchedBrand = brandTriggers.find(brand => domain.includes(brand));
     const isOfficialBrand = matchedBrand ? new RegExp(`^${matchedBrand}\\.(com|org|net|co\\.uk|gov)$`).test(domain) : false;
 
-    // SSL Heuristic Check
+    // SSL Heuristic Check (15% Weight)
     if (!isSSL) {
-      score -= 18;
-      scoreBreakdown.push({ name: "SSL/TLS Connection Encryption Check", value: -18 });
+      score -= 15;
+      scoreBreakdown.push({ name: "Insecure Connection (HTTP)", value: -15 });
       negativeSignals.push("Insecure Connection");
       findings.push({
         finding: "Unencrypted Connection Protocol (HTTP instead of HTTPS)",
@@ -118,15 +117,14 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
         description: "Lacks basic SSL encryption protocol. All traffic is sent in clear text."
       });
     } else {
-      score += 10;
-      scoreBreakdown.push({ name: "SSL/TLS Encryption Certificate verified", value: 10 });
+      scoreBreakdown.push({ name: "SSL Connection Security", value: 15 });
       positiveSignals.push("SSL Certificate Active");
     }
 
-    // Brand impersonation check
+    // Brand impersonation check (30% Weight)
     if (matchedBrand && !isOfficialBrand) {
-      score -= 48;
-      scoreBreakdown.push({ name: "Protected Trademark Impersonation Flag", value: -48 });
+      score -= 30;
+      scoreBreakdown.push({ name: "Trademark Impersonation Threat", value: -30 });
       negativeSignals.push("Brand Impersonation");
       findings.push({
         finding: `Brand Impersonation Segment: Uses protected keyword '${matchedBrand}'`,
@@ -139,47 +137,45 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
         title: "Brand Impersonation",
         description: "Uses trademarked keywords in an unverified layout to spoof official corporate gateways."
       });
-    }
-
-    // TLD Extension Check
-    if (endsWithShortScamTld) {
-      score -= 22;
-      scoreBreakdown.push({ name: "Low-Reputation TLD Extension Check", value: -22 });
-      negativeSignals.push("Low-Reputation TLD");
-      findings.push({
-        finding: `Low-Reputation Domain Extension (.${domain.split('.').pop()})`,
-        whyItMatters: "Cheap domain extension registries require no verification checks and are heavily bought in bulk by automated scam networks for temporary throwaway campaigns.",
-        impact: "Signals low-investment temporary hosting commonly associated with cybercrime campaigns.",
-        confidence: "High"
-      });
     } else {
-      score += 5;
-      scoreBreakdown.push({ name: "Standard High-Reputation Extension Verification", value: 5 });
-      positiveSignals.push("Older/Standard Domain Extension (.com/.org)");
+      scoreBreakdown.push({ name: "No Brand Spoofing Detected", value: 30 });
     }
 
-    // Domain Age
+    // Domain Age (25% Weight)
     let ageInDays = 0;
-    if (score >= 80) {
-      ageInDays = 1000 + (seed % 8000);
-    } else if (score >= 50) {
-      ageInDays = 180 + (seed % 540);
+    // Determine dynamic age based on other signals to mock realistically
+    if (matchedBrand && !isOfficialBrand) {
+      ageInDays = 1 + (seed % 90); // Brand spoofing domains are usually very new
+    } else if (endsWithShortScamTld) {
+      ageInDays = 1 + (seed % 180); // Spam TLDs are usually new
     } else {
-      ageInDays = 1 + (seed % 90);
+      ageInDays = 100 + (seed % 5000); // Standard domains vary
     }
 
-    if (ageInDays > 365) {
+    if (ageInDays > 1095) { // >3 years old
       const years = (ageInDays / 365).toFixed(1);
       ageText = `${years} Years Old`;
-      agePercent = Math.min(100, Math.round((ageInDays / 1825) * 100));
-      score += 15;
-      scoreBreakdown.push({ name: "Domain Longevity Verification", value: 15 });
+      agePercent = 95;
+      scoreBreakdown.push({ name: "Established Domain Longevity", value: 25 });
       positiveSignals.push("Older Domain Registration");
-    } else {
+    } else if (ageInDays > 365) { // 1-3 years old
+      const years = (ageInDays / 365).toFixed(1);
+      ageText = `${years} Years Old`;
+      agePercent = 65;
+      score -= 10;
+      scoreBreakdown.push({ name: "Moderate Domain History", value: 15 });
+      positiveSignals.push("Moderate Domain Age");
+    } else if (ageInDays > 90) { // 90 days to 1 year
       ageText = `${ageInDays} Days Old`;
-      agePercent = Math.max(5, Math.round((ageInDays / 365) * 20));
+      agePercent = 35;
       score -= 20;
-      scoreBreakdown.push({ name: "Newly Registered Domain Penalty", value: -20 });
+      scoreBreakdown.push({ name: "Recent Domain Registration", value: 5 });
+      negativeSignals.push("Recently Registered Domain");
+    } else { // <90 days old
+      ageText = `${ageInDays} Days Old`;
+      agePercent = 10;
+      score -= 25;
+      scoreBreakdown.push({ name: "Suspicious New Registration", value: 0 });
       negativeSignals.push("Newly Registered Domain");
       findings.push({
         finding: `Domain Age: Registered only ${ageText} ago`,
@@ -193,34 +189,47 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
       });
     }
 
-    // Structure checks
-    if (hasMultipleHyphens) {
-      score -= 10;
-      scoreBreakdown.push({ name: "Multiple Domain Hyphens Penalty", value: -10 });
-      negativeSignals.push("Typosquatting/Hyphens");
+    // TLD Extension Check (15% Weight)
+    if (endsWithShortScamTld) {
+      score -= 15;
+      scoreBreakdown.push({ name: "Low-Reputation TLD Extension", value: -15 });
+      negativeSignals.push("Low-Reputation TLD");
       findings.push({
-        finding: "Suspicious Hyphenated Domain Pattern",
-        whyItMatters: "Scammers chain multiple hyphens to simulate official domain pathways while pointing to unverified hosting servers.",
-        impact: "Attempts to construct lookalike domain variations to fool human readers.",
-        confidence: "Medium"
-      });
-    }
-
-    if (hasSubdomainFlooding) {
-      score -= 12;
-      scoreBreakdown.push({ name: "Excessive Subdomains Penalty", value: -12 });
-      negativeSignals.push("Subdomain Flooding");
-      findings.push({
-        finding: "Subdomain Redirection Flooding",
-        whyItMatters: "Chaining multiple subdomains (e.g. login.support.verify.com) is used to push the actual root domain off mobile screen viewports, hiding the destination controller.",
-        impact: "Obfuscates true domain ownership and registry segments.",
+        finding: `Low-Reputation Domain Extension (.${domain.split('.').pop()})`,
+        whyItMatters: "Cheap domain extension registries require no verification checks and are heavily bought in bulk by automated scam networks for temporary throwaway campaigns.",
+        impact: "Signals low-investment temporary hosting commonly associated with cybercrime campaigns.",
         confidence: "High"
       });
+    } else {
+      scoreBreakdown.push({ name: "Standard High-Trust TLD Check", value: 15 });
+      positiveSignals.push("Older/Standard Domain Extension (.com/.org)");
     }
 
-    if (hasLongLength) {
-      score -= 8;
-      scoreBreakdown.push({ name: "Excessive Domain Length Penalty", value: -8 });
+    // Structure checks (15% Weight)
+    if (hasMultipleHyphens || hasSubdomainFlooding || hasLongLength) {
+      score -= 15;
+      scoreBreakdown.push({ name: "Deceptive Domain Structure", value: -15 });
+      if (hasMultipleHyphens) {
+        negativeSignals.push("Typosquatting/Hyphens");
+        findings.push({
+          finding: "Suspicious Hyphenated Domain Pattern",
+          whyItMatters: "Scammers chain multiple hyphens to simulate official domain pathways while pointing to unverified hosting servers.",
+          impact: "Attempts to construct lookalike domain variations to fool human readers.",
+          confidence: "Medium"
+        });
+      }
+      if (hasSubdomainFlooding) {
+        negativeSignals.push("Subdomain Flooding");
+        findings.push({
+          finding: "Subdomain Redirection Flooding",
+          whyItMatters: "Chaining multiple subdomains (e.g. login.support.verify.com) is used to push the actual root domain off mobile screen viewports, hiding the destination controller.",
+          impact: "Obfuscates true domain ownership and registry segments.",
+          confidence: "High"
+        });
+      }
+    } else {
+      scoreBreakdown.push({ name: "Domain Structure Integrity Check", value: 15 });
+      positiveSignals.push("Clean Domain Structure");
     }
 
     // eCommerce specific checks
@@ -228,15 +237,15 @@ export function analyzeInput(value: string, type: string): DetailedAnalysisResul
       const discountKeywords = ['cheap', 'clearance', 'discount', 'wholesale', 'sale', 'outlet', 'free', 'store-online'];
       const hasDiscountInName = discountKeywords.some(keyword => domain.includes(keyword));
       if (hasDiscountInName) {
-        score -= 15;
-        scoreBreakdown.push({ name: "eCommerce Discount-Bait Name Check", value: -15 });
+        score -= 10;
+        scoreBreakdown.push({ name: "eCommerce Discount-Bait Name Check", value: -10 });
         negativeSignals.push("Discount Bait Keywords");
         findings.push({
           finding: "Discount Baiting Keywords in Domain Address",
           whyItMatters: "Scammers incorporate discount words to capture high-intent search traffic seeking bargains, leading targets to counterfeit catalogs.",
           impact: "Highly correlated with temporary dropshipping catalog scams or direct credit card theft schemes.",
           confidence: "Medium"
-      });
+        });
         redFlags.push({
           title: "Suspicious Payment Request",
           description: "eCommerce structure focuses heavily on immediate checkout through discount lure bait."
@@ -905,94 +914,24 @@ function domainOrValue(value: string, type: string): string {
 }
 
 // Gemini Free API call integration
-async function fetchGeminiScan(value: string, type: string, apiKey: string): Promise<DetailedAnalysisResult> {
-  const promptText = `
-You are an expert threat intelligence analyst at a cybersecurity firm.
-Analyze this suspicious input:
-Input Type: ${type}
-Input Content: "${value}"
-
-Perform a forensic analysis. Answer these 5 questions:
-1. Is it safe?
-2. Why do you think that? (Explain indicators)
-3. What evidence supports that?
-4. Why should I care? (Detail specific vulnerabilities/consequences)
-5. What should I do next? (Provide actionable next steps and reasoning)
-
-COMPETITOR COMPARISON & SUPERIORITY INSTRUCTIONS:
-- Analyze what standard threat checkers (e.g. VirusTotal, ScamAdviser, URLVoid, PhishTank, Whois lookup checkers) would report for this input.
-- Compare and contrast our context-aware AI threat analysis against those standard checks. Note what generic databases/checkers would miss (e.g., they miss semantic context, lookalike domain homoglyphs, recruitment advance-fee patterns in conversations, high-urgency language, banking/courier smishing templates, VoIP caller routing masking).
-- Integrate this comparison directly in your findings and executiveSummary. Make sure to explain clearly why our AI-driven report is more useful, accurate, and comprehensive than those static competitors.
-
-IMPORTANT constraints:
-- Do NOT use ChatGPT clichés like "Based on the provided information" or "As an AI".
-- Sound authoritative, professional, and evidence-based.
-- Return EXACTLY a JSON object matching this schema, with no other text:
-{
-  "score": number, // 0 to 100, where 90+ is Safe, 75-89 is Likely Safe, 50-74 is Suspicious, 30-49 is High Risk, 10-29 is Dangerous, and <10 is Scam Likely
-  "verdict": "Safe" | "Likely Safe" | "Suspicious" | "High Risk" | "Dangerous" | "Scam Likely",
-  "riskLevel": "Low" | "Medium" | "High" | "Critical",
-  "confidence": number, // 0 to 100 percentage
-  "executiveSummary": "1-3 short paragraphs in plain English explaining the threat profile and whether to trust it. Explicitly reference what standard/competitor checkers would report (or miss) and why our analysis is more useful and complete. No technical jargon.",
-  "findings": [
-    {
-      "finding": "Specific structural or language finding name (e.g., 'Competitor Blindspot: Semantic Phishing Urgency Detection' or similar if relevant)",
-      "whyItMatters": "Why this specific finding is dangerous or helpful",
-      "impact": "Consequences of this finding",
-      "confidence": "High" | "Medium" | "Low"
-    }
-  ],
-  "positiveSignals": ["positive indicator 1", "positive indicator 2"],
-  "negativeSignals": ["negative indicator 1", "negative indicator 2"],
-  "scoreBreakdown": [
-    { "name": "Factor name", "value": number } // e.g. "Valid SSL" -> 10, "New Domain" -> -20. They must add up to the final score from a baseline of 90.
-  ],
-  "redFlags": [
-    { "title": "Fake Urgency" | "Suspicious Payment Request" | "OTP Request" | "Crypto Scam Pattern" | "Job Fee Request" | "Gift Card Request", "description": "Specific trigger explanation" }
-  ],
-  "whatItMeans": [
-    { "advice": "Do not enter card info / Do not send money / etc.", "consequence": "Consequence details explaining the vulnerability" }
-  ],
-  "matchedPatterns": [
-    { "pattern": "Employment Scam / Crypto Scam / Fake Delivery Scam / Tech Support Scam / Investment Scam", "similarity": "Explain exactly how this matches the scam pattern details" }
-  ],
-  "recommendedActions": [
-    { "action": "Action name", "reasoning": "Reasoning explaining why this step is critical" }
-  ],
-  "communityIntel": {
-    "reportsCount": number,
-    "complaints": ["Direct user quote complaint 1", "Direct user quote complaint 2"],
-    "trendText": "Spike in activity / stable",
-    "trendDirection": "up" | "down" | "stable"
-  },
-  "simpleExplanation": "One paragraph only. Explain everything as if talking to a parent with no technical knowledge."
-}
-`;
-
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+async function fetchGeminiScan(value: string, type: string): Promise<DetailedAnalysisResult> {
+  const response = await fetch('/api/scan', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{ text: promptText }]
-      }],
-      generationConfig: {
-        responseMimeType: 'application/json'
-      }
-    })
+    body: JSON.stringify({ value, type })
   });
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status} ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `API error: ${response.status} ${response.statusText}`);
   }
 
-  const data = await response.json();
-  const text = data.candidates[0].content.parts[0].text;
-  const resultObj = JSON.parse(text);
+  const resultObj = await response.json();
 
   // Inject UI helper fields required for layout
+  resultObj.isAI = true;
   resultObj.browserUrl = type === 'website' || type === 'store' ? (value.startsWith('http') ? value : `https://${value}`) : 'https://www.google.com';
   resultObj.previewTitle = type === 'website' || type === 'store' ? value.split('/')[0] : 'Scam Audit Report';
   resultObj.ageText = resultObj.score >= 80 ? 'Established History' : 'Recent Registration';
@@ -1028,28 +967,27 @@ export function triggerScamScan(value: string, type: string): void {
   progressBar.style.width = '0%';
 
   const logs: ScanLogItem[] = [];
-  const apiKey = (import.meta.env as any).PUBLIC_GEMINI_API_KEY || '';
 
   logs.push(
     { text: `[INFO] Initializing security audit for: ${value}`, delay: 100, progress: 10 },
-    { text: `[INFO] Active API Key found. Routing request to Gemini AI Threat Intelligence...`, delay: 350, progress: 30 },
-    { text: `[INFO] Awaiting structured analysis from Gemini 1.5 Flash...`, delay: 700, progress: 50 },
+    { text: `[INFO] Connecting to secure server-side analysis gateway...`, delay: 350, progress: 30 },
+    { text: `[INFO] Awaiting structured analysis from Gemini 3.5 Flash...`, delay: 700, progress: 50 },
     { text: `[INFO] Parsing threat definitions, evidence confidence, and breakdown values...`, delay: 1100, progress: 75 },
     { text: `[INFO] Comparing intelligence indicators against standard competitor database results...`, delay: 1450, progress: 90 },
     { text: `[SUCCESS] AI Threat Analysis complete. Preparing dashboard...`, delay: 1800, progress: 100 }
   );
 
-  // Fire Gemini promise in parallel if active
+  // Fire Gemini promise in parallel
   let geminiPromise: Promise<DetailedAnalysisResult> | null = null;
-  geminiPromise = fetchGeminiScan(value, type, apiKey).catch(err => {
-    console.warn("Gemini API call failed, falling back to local heuristics:", err);
+  geminiPromise = fetchGeminiScan(value, type).catch(err => {
+    console.warn("Secure Gemini scan failed, falling back to local heuristics:", err);
     // Append warning to terminal if it is still visible
     const warningLine = document.createElement('div');
     warningLine.className = 'font-mono text-error transition-all duration-300';
-    warningLine.textContent = `[ERROR] Gemini API failed: ${err.message || err}. Falling back to Heuristics.`;
+    warningLine.textContent = `[ERROR] Secure Scan failed: ${err.message || err}. Falling back to Heuristics.`;
     terminalOutput.appendChild(warningLine);
     return analyzeInput(value, type);
-  });
+  });;
 
   // Scroll terminal logs step-by-step
   logs.forEach(log => {
@@ -1102,7 +1040,7 @@ export function triggerScamScan(value: string, type: string): void {
           if (verdictTitleEl) verdictTitleEl.textContent = res.verdict;
           if (confidenceEl) confidenceEl.textContent = `Confidence Score: ${res.confidence}%`;
           if (metaTypeEl) {
-            metaTypeEl.textContent = apiKey ? "GEMINI AI THREAT SCAN" : "OFFLINE HEURISTICS SCAN";
+            metaTypeEl.textContent = res.isAI ? "GEMINI AI THREAT SCAN" : "OFFLINE HEURISTICS SCAN";
           }
           if (timestampEl) {
             timestampEl.textContent = `Scanned on: ${new Date().toLocaleString()}`;
