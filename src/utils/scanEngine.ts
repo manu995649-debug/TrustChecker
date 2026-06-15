@@ -1336,6 +1336,10 @@ export function triggerScamScan(value: string, type: string): void {
             (window as any).updateTrustScoreDial('report-dial', res.score);
           }
 
+          // Hide terminal and re-enable form for editing/new scans
+          terminal.classList.add('hidden');
+          formBox.classList.remove('opacity-40', 'pointer-events-none');
+
           // Reveal report card with scroll effect
           report.classList.remove('hidden');
           report.scrollIntoView({ behavior: 'smooth', block: 'start' });
