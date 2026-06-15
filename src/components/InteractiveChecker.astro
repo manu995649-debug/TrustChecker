@@ -33,43 +33,12 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
   </div>
 
-  <!-- API Settings Panel -->
-  <div class="w-full bg-canvas border border-hairline rounded-lg p-4 shadow-level1 flex flex-col gap-3">
-    <div class="flex items-center justify-between cursor-pointer select-none" id="settings-toggle">
-      <div class="flex items-center gap-2">
-        <svg class="w-4.5 h-4.5 text-mute" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span class="text-xs font-mono font-bold text-ink uppercase tracking-wider">AI Onboarding & Settings</span>
-      </div>
-      <span id="settings-status-badge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-canvas-soft-2 text-mute border-hairline transition-all duration-300">
-        OFFLINE MODE
-      </span>
-    </div>
-    
-    <div id="settings-content" class="hidden flex-col gap-2 border-t border-hairline pt-3">
-      <p class="text-xs text-mute leading-relaxed font-sans">
-        Enter your free Gemini API Key below to enable real-time threat intelligence scans powered by Gemini 1.5 Flash. If left blank, TrustChecker will analyze inputs locally using its client-side heuristics engine.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-2 mt-1">
-        <input 
-          type="password" 
-          id="api-key-input" 
-          placeholder="Enter Gemini API Key..." 
-          class="flex-grow h-9 border border-hairline rounded bg-canvas px-3 text-xs focus:border-ink focus:outline-none placeholder-mute"
-        />
-        <button id="btn-save-key" class="h-9 px-4 bg-primary text-on-primary font-medium text-xs rounded hover:bg-primary/95 transition-colors cursor-pointer select-none">
-          Save Key
-        </button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Form Panels -->
   <div class="w-full bg-canvas border border-hairline rounded-lg p-6 shadow-level2" id="analyze-form">
     <!-- Tab 1: Website Scanner -->
-    <div id="panel-url" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'url' ? '' : 'hidden'}`}>
+    <div id="panel-url" class={`tab-panel flex-col gap-4 ${defaultTab === 'url' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-url">Website URL / Domain Name</label>
         <span class="text-xs text-mute">Instantly analyze domain age, SSL details, registration parameters, and phishing indicators.</span>
@@ -99,7 +68,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
 
     <!-- Tab 2: Job Offer Scanner -->
-    <div id="panel-job" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'job' ? '' : 'hidden'}`}>
+    <div id="panel-job" class={`tab-panel flex-col gap-4 ${defaultTab === 'job' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-job">Job Description / Recruiter Conversation</label>
         <span class="text-xs text-mute">Paste recruiter emails, WhatsApp/Telegram chat logs, or job postings to identify common employment fraud.</span>
@@ -118,7 +87,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
 
     <!-- Tab 3: Email Scanner -->
-    <div id="panel-email" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'email' ? '' : 'hidden'}`}>
+    <div id="panel-email" class={`tab-panel flex-col gap-4 ${defaultTab === 'email' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-email">Suspicious Email Content</label>
         <span class="text-xs text-mute">Paste the full email text or subject lines to look for social engineering, urgency red flags, and bait links.</span>
@@ -137,7 +106,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
 
     <!-- Tab 4: SMS Scanner -->
-    <div id="panel-sms" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'sms' ? '' : 'hidden'}`}>
+    <div id="panel-sms" class={`tab-panel flex-col gap-4 ${defaultTab === 'sms' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="textarea-sms">Text Message Content</label>
         <span class="text-xs text-mute">Paste SMS or text alerts regarding package delivery, bank suspensions, or sweepstakes prizes.</span>
@@ -156,7 +125,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
 
     <!-- Tab 5: Phone Scanner -->
-    <div id="panel-phone" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'phone' ? '' : 'hidden'}`}>
+    <div id="panel-phone" class={`tab-panel flex-col gap-4 ${defaultTab === 'phone' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-phone">Phone Number</label>
         <span class="text-xs text-mute">Check community databases, reported scam logs, and caller ID spoofing indicators.</span>
@@ -180,7 +149,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
     </div>
 
     <!-- Tab 6: eCommerce Store Scanner -->
-    <div id="panel-store" class={`tab-panel flex flex-col gap-4 ${defaultTab === 'store' ? '' : 'hidden'}`}>
+    <div id="panel-store" class={`tab-panel flex-col gap-4 ${defaultTab === 'store' ? 'flex' : 'hidden'}`}>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-mono tracking-wider text-body uppercase" for="input-store">eCommerce Website URL</label>
         <span class="text-xs text-mute">Check whether an online store is legitimate or a temporary fake shop selling nonexistent merchandise.</span>
@@ -255,10 +224,14 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
 
         // Update panels
         tabPanels.forEach(panel => {
+          panel.classList.remove('flex');
           panel.classList.add('hidden');
         });
         const activePanel = document.getElementById(`panel-${targetTab}`);
-        if (activePanel) activePanel.classList.remove('hidden');
+        if (activePanel) {
+          activePanel.classList.remove('hidden');
+          activePanel.classList.add('flex');
+        }
         
         // Hide report card when changing tabs
         const report = document.getElementById('dashboard-report');
@@ -356,51 +329,7 @@ const { defaultTab = 'url', prefilledValue = '' } = Astro.props;
       }, 300);
     }
 
-    // 4. API Settings Event Handlers
-    const settingsToggle = document.getElementById('settings-toggle');
-    const settingsContent = document.getElementById('settings-content');
-    const settingsStatusBadge = document.getElementById('settings-status-badge');
-    const apiKeyInput = document.getElementById('api-key-input') as HTMLInputElement;
-    const btnSaveKey = document.getElementById('btn-save-key');
 
-    // Initialize state
-    const savedKey = localStorage.getItem('trustchecker_gemini_api_key');
-    if (savedKey) {
-      if (apiKeyInput) apiKeyInput.value = savedKey;
-      if (settingsStatusBadge) {
-        settingsStatusBadge.textContent = "AI INTEL ACTIVE";
-        settingsStatusBadge.className = "text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
-      }
-    }
-
-    if (settingsToggle && settingsContent) {
-      settingsToggle.addEventListener('click', () => {
-        if (settingsContent.classList.contains('hidden')) {
-          settingsContent.classList.remove('hidden');
-          settingsContent.classList.add('flex');
-        } else {
-          settingsContent.classList.remove('flex');
-          settingsContent.classList.add('hidden');
-        }
-      });
-    }
-
-    if (btnSaveKey && apiKeyInput && settingsStatusBadge) {
-      btnSaveKey.addEventListener('click', () => {
-        const key = apiKeyInput.value.trim();
-        if (key) {
-          localStorage.setItem('trustchecker_gemini_api_key', key);
-          settingsStatusBadge.textContent = "AI INTEL ACTIVE";
-          settingsStatusBadge.className = "text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
-          alert('Gemini API Key saved successfully. Real-time AI threat audits are now active!');
-        } else {
-          localStorage.removeItem('trustchecker_gemini_api_key');
-          settingsStatusBadge.textContent = "OFFLINE MODE";
-          settingsStatusBadge.className = "text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-canvas-soft-2 text-mute border-hairline";
-          alert('API Key removed. TrustChecker will fall back to local heuristics engine.');
-        }
-      });
-    }
   }
 
   if (document.readyState === 'loading') {
