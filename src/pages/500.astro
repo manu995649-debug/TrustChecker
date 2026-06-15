@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+  error?: unknown;
+}
+
+const { error } = Astro.props;
+const errorMessage = error instanceof Error ? error.message : 'An unexpected server error occurred during request processing.';
+---
+
+<Layout 
+  title="500 - Server Error | TrustChecker"
+  description="A secure server-side error occurred. Return to the TrustChecker dashboard to continue scanning."
+>
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+
+  <div class="max-w-xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh] gap-6">
+    <!-- Icon/Graphic -->
+    <div class="relative w-24 h-24 mb-2 flex items-center justify-center rounded-full bg-warning/10 border border-warning/20 text-warning animate-pulse">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z" />
+      </svg>
+      <!-- Absolute accent blur -->
+      <div class="absolute inset-0 bg-warning/20 rounded-full filter blur-xl -z-10"></div>
+    </div>
+
+    <!-- Error Codes -->
+    <div class="flex flex-col gap-2 select-none">
+      <span class="text-xs font-mono font-bold tracking-widest text-warning uppercase">ERROR CODE 500</span>
+      <h1 class="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-ink via-mute to-warning bg-clip-text text-transparent">Server Error</h1>
+    </div>
+
+    <!-- Explanation -->
+    <p class="text-sm text-body leading-relaxed max-w-md">
+      Something went wrong on our end. The server-side analysis gateway encountered an unexpected condition that prevented it from completing the request.
+    </p>
+
+    <!-- Error Diagnostics (Only shown if message exists, styled in mono box) -->
+    <div class="w-full text-left p-4 rounded border border-hairline bg-canvas-soft-2 font-mono text-[10px] text-mute overflow-x-auto leading-relaxed max-h-32">
+      <span class="font-bold text-ink">SYSTEM DIAGNOSTIC:</span>
+      <p class="mt-1">{errorMessage}</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-4 justify-center items-center mt-2">
+      <button onclick="window.location.reload();" class="px-5 py-2.5 rounded border border-hairline bg-canvas hover:border-ink transition-all duration-300 font-semibold text-xs tracking-wider">
+        RETRY REQUEST
+      </button>
+      <a href="/" class="px-6 py-2.5 rounded bg-ink text-canvas hover:bg-mute font-semibold text-xs tracking-wider transition-all duration-300 shadow-level1">
+        RETURN TO DASHBOARD
+      </a>
+    </div>
+  </div>
+</Layout>

@@ -1,59 +1,307 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import InteractiveChecker from '../components/InteractiveChecker.astro';
+
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://trustchecker.com/phishing-email-checker/#software",
+      "name": "Phishing Email Checker",
+      "operatingSystem": "All",
+      "applicationCategory": "SecurityApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "detail": {
+        "@type": "WebPage",
+        "name": "Phishing Email Checker & Header Auditor"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://trustchecker.com/phishing-email-checker/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I check if an email is a scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste the email sender domain, email body text, or link targets into the TrustChecker Phishing Email Checker to audit header validation profiles and credential harvesting triggers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is display name spoofing?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Display name spoofing occurs when a scammer overrides the sender display name to show a trusted brand (e.g. Netflix) while using an unverified, generic email address."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an email header and how does it help identify scams?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An email header contains technical metadata showing routing servers and sender checks (SPF, DKIM, DMARC) to verify domain authenticity."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do phishing emails threaten account suspension?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Urgency and fear tactics bypass caution, forcing victims to click links and enter credentials before checking the sender identity."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I tell if a bank email is legitimate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Real bank alerts address you by name, send from verified domains, pass SPF/DKIM checks, and never link to login gateways demanding password updates."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is SPF (Sender Policy Framework)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SPF is an email validation system designed to prevent spoofing by verifying whether an outbound mail server is authorized to send mail for the domain."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is DKIM (DomainKeys Identified Mail)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DKIM provides a cryptographic signature verifying that the email was sent by the domain owner and wasn't altered in transit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do scammers ask for payments in gift cards?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Gift cards are anonymous, untraceable, and cannot be refunded, making them highly favored by international scam networks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is spear phishing?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Spear phishing is a highly targeted attack where emails are tailored using the victim's name, employer details, and personal data to build credibility."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I verify email links safely?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hover over the link button without clicking to view the actual URL. If the root domain doesn't match the official company domain, it is likely a scam."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an invoice phishing scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Invoice scams send mock notices claiming premium software purchases occurred on your card, urging you to call fake helpdesks to dispute charges."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can opening a phishing email infect my computer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Simply opening an email rarely compromises safety, but running attachments (like PDF or ZIP files) or clicking links can download spyware."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I report a phishing email?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Report the phishing mail to your email client's spam desk, or forward details to APWG at reportphishing@apwg.org."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are salutations like 'Dear Customer' suspicious?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vague salutations indicate a bulk spam template. Real companies have user database details and address you directly by your name."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does TrustChecker scan attachments?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "TrustChecker parses links, sender domains, and message bodies. To scan attachments, run them through verified local antivirus checkers."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://trustchecker.com/phishing-email-checker/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://trustchecker.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Phishing Email Checker",
+          "item": "https://trustchecker.com/phishing-email-checker"
+        }
+      ]
+    }
+  ]
+};
 ---
 
 <Layout 
-  title="Phishing Email Checker - Scan Suspicious Emails - TrustChecker"
+  title="Phishing Email Checker - Verify Sender Addresses & Links | TrustChecker"
   description="Validate suspicious emails and subject lines for phishing triggers, credential farming, and payment scams. Protect your bank accounts."
   activePath="/phishing-email-checker"
 >
-  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
+  <div class="max-w-4xl mx-auto flex flex-col gap-16">
     <!-- Header -->
-    <header class="text-center flex flex-col items-center gap-4 select-none">
+    <header class="text-center flex flex-col items-center gap-4">
       <span class="caption-mono text-link font-semibold">EMAIL FORENSICS</span>
-      <h1 class="display-lg text-ink font-semibold">Phishing email checker.</h1>
+      <h1 class="display-lg text-ink font-semibold">Phishing Email Checker</h1>
       <p class="text-sm text-body max-w-lg">
-        Determine if an email is a scam. Paste email text, sender info, or link details below to check for credential theft and bait indicators.
+        Audit unknown sender domains, check email subject links, and scan text payloads for spoofed header records, credit card traps, and password harvesting forms.
       </p>
     </header>
 
     <!-- Checker Dashboard -->
     <InteractiveChecker defaultTab="email" />
 
-    <!-- Educational section -->
-    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
-      <h2 class="display-sm text-ink">How to identify phishing emails.</h2>
+    <!-- Detailed Content Architecture Sections -->
+    <article class="flex flex-col gap-12 border-t border-hairline pt-12 text-body">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-body leading-relaxed">
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-ink">1. Check the Sender Header Address</span>
-          <p>
-            Scammers spoof display names (e.g. showing "Netflix Support" as name, but actual sender address is `billing-updates-netflix@support-verification.top`). Always check the actual domain after the `@` symbol.
-          </p>
-        </div>
+      <!-- Section 1: What is a Phishing Email? -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">What is a Phishing Email?</h2>
+        <p class="text-sm leading-relaxed">
+          A phishing email is a fraudulent message designed to steal critical account credentials, credit card details, or execute spyware on your computer. Scammers use bulk mailing lists to send lookalike messages mimicking PayPal security alerts, bank transfer blocks, or retail invoice updates.
+        </p>
+        <p class="text-sm leading-relaxed">
+          By inserting mock links pointing to clone login sheets or requesting remote assistance download tools, they compromise your network credentials.
+        </p>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-ink">2. High Pressure & Urgency Tactics</span>
-          <p>
-            Phishing attacks use panic-triggering threats ("Your account will be suspended within 24 hours" or "Suspicious transactions resolved on your credit card") to induce impulsive link clicks.
-          </p>
-        </div>
+      <!-- Section 2: How it Works -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">How the Phishing Email Checker Works</h2>
+        <p class="text-sm leading-relaxed">
+          The TrustChecker mail forensics engine verifies emails by scanning text indicators and sender structures:
+        </p>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs">
+          <li><strong>Sender Headers Authentication:</strong> Screens if sender records pass SPF and DKIM validation flags to verify sender origin.</li>
+          <li><strong>Display Name Spoofing Checks:</strong> Identifies if external addresses are masked behind official brand display names.</li>
+          <li><strong>Urgent Action Cues:</strong> Flags high-pressure language claiming account suspensions or penalty locks.</li>
+          <li><strong>Harvesting Links Auditor:</strong> Checks links in the email body for redirect channels pointing to newly registered domains.</li>
+        </ul>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-ink">3. Requesting Gift Cards or Money Transfers</span>
-          <p>
-            Legitimate companies will never demand billing resolutions using Amazon/iTunes gift cards, crypto deposits, or instant wire transfers.
-          </p>
+      <!-- Section 3: How to identify phishing emails -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink">How to Identify Phishing Emails</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-body leading-relaxed">
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-ink text-sm">1. Check actual sender address</span>
+            <p>Scammers display names like "Amazon Support," but the actual address behind the header is <code>billing-check-amazon@verification-portal.xyz</code>. Always verify the domain after the @ symbol.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-ink text-sm">2. urgent lockout warnings</span>
+            <p>Phishing campaigns claim that your card failed or your password was compromised to trigger immediate link clicks. Valid portals rarely give 24-hour ultimatums.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-ink text-sm">3. Demand for Gift Cards</span>
+            <p>Real companies never demand payments or billing corrections using retail gift cards or immediate cryptocurrency transfers. Any such request is a scam.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-ink text-sm">4. generic greetings & typos</span>
+            <p>Salutations like "Dear Client" or poor grammar indicate pre-packaged translation scripts sent in bulk to millions of users.</p>
+          </div>
         </div>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-ink">4. Clumsy Grammar or Generic Greetings</span>
-          <p>
-            Vague salutations like "Dear Customer" or "Valued Client" suggest automated phishing templates sent to millions of people simultaneously.
-          </p>
+      <!-- Section 4: Real-world Examples -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Real-world Examples of Email Phishing</h2>
+        <div class="flex flex-col gap-4 text-xs">
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">The Cloned Netflix Billing Failed Email</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              A user receives an email claiming their subscription was suspended due to a payment failure. The email has a red button labeled "Update Payment." Tapping it leads to <code>netflix-payment-security.top</code>, a lookalike page that steals card numbers, credit card CVVs, and billing addresses.
+            </p>
+          </div>
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">The Fake Geek Squad Invoice Scam</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              An email invoice claims the user was charged $499.99 for a Geek Squad service renewal. It states: "If you did not authorize this charge, call our helpline at 1-888-XXX-XXXX." When the victim calls, the operators direct them to install remote desk software to "process a refund," gaining full control of their computer.
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Section 5: Prevention Tips -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Essential Email Security & Prevention Tips</h2>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs text-body leading-relaxed">
+          <li>Hover over links to verify the actual domain target name before clicking.</li>
+          <li>Never open attachments (.zip, .pdf, .html) sent by unverified senders.</li>
+          <li>Set up multi-factor authentication (MFA) on all critical online portals.</li>
+          <li>Use TrustChecker to analyze suspicious sender domains and header signatures.</li>
+        </ul>
+      </section>
+
+      <!-- Section 6: FAQ Accordion Section -->
+      <section class="flex flex-col gap-6">
+        <h2 class="display-sm text-ink font-semibold">Frequently Asked Questions</h2>
+        <div class="flex flex-col gap-3">
+          {schemaData["@graph"][1].mainEntity.map((faq) => (
+            <details class="group border border-hairline rounded bg-canvas p-4 transition-all duration-300">
+              <summary class="flex justify-between items-center cursor-pointer font-semibold text-ink text-xs select-none">
+                <span>{faq.name}</span>
+                <span class="text-mute group-open:rotate-180 transition-transform duration-300">↓</span>
+              </summary>
+              <p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">
+                {faq.acceptedAnswer.text}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 7: Internal Linking Map -->
+      <footer class="border-t border-hairline pt-6 mt-6 flex flex-col gap-3">
+        <span class="text-xs font-semibold text-mute">Explore Other Scam Verification Tools:</span>
+        <div class="flex flex-wrap gap-4 text-xs font-medium text-link">
+          <a href="/website-scam-checker" class="hover:underline">Website Safety Checker</a>
+          <span>•</span>
+          <a href="/fake-job-offer-checker" class="hover:underline">Job Offer Legitimacy Checker</a>
+          <span>•</span>
+          <a href="/phone-number-scam-checker" class="hover:underline">Suspicious Call Lookup</a>
+          <span>•</span>
+          <a href="/sms-scam-checker" class="hover:underline">SMS text scam checker</a>
+        </div>
+      </footer>
+
+    </article>
   </div>
 </Layout>

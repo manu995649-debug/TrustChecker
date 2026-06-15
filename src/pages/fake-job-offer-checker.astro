@@ -1,52 +1,303 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import InteractiveChecker from '../components/InteractiveChecker.astro';
+
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://trustchecker.com/fake-job-offer-checker/#software",
+      "name": "Fake Job Offer Checker",
+      "operatingSystem": "All",
+      "applicationCategory": "SecurityApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "detail": {
+        "@type": "WebPage",
+        "name": "Fake Job Offer Checker & Employment Scam Scanner"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://trustchecker.com/fake-job-offer-checker/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I check if a job offer is a scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Copy the job description, offer letter, or recruiter emails and paste them into the TrustChecker Job Scam Checker. Our tool scans the text for flags like check deposits, Telegram onboarding, and upfront equipment fees."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are the warning signs of a fake job offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Common warning signs include high salaries for simple tasks, demands for upfront fees, recruiters using public emails (like @gmail.com), and interviews conducted entirely via WhatsApp or Telegram chats."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do fake recruiters send checks to buy home office equipment?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This is a fake check scam. The scammer sends you a digital check to deposit and tells you to buy software or laptops from a specific online vendor. When the check bounces, you lose the funds you sent."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it normal for a recruiter to interview me on Telegram?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Reputable companies utilize official communication systems (like Teams, Zoom, or corporate emails). Scammers use Telegram and WhatsApp because they can remain anonymous."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I verify a recruiter is who they say they are?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Verify the recruiter's email domain matches the company's official domain, cross-reference their profile on LinkedIn, and contact the firm's formal HR desk using their public telephone number."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a remote package-handler scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Also called a reshipping scam, you are paid to receive, inspect, and repackage goods bought with stolen cards. Accepting these shipments makes you an accessory to package forwarding fraud."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do real companies ask for upfront training or application fees?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Never. Legitimate companies cover all training, software licenses, and hardware costs. Any request to pay an upfront fee to secure a job is a scam."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can a job scam lead to identity theft?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Fake applications gather sensitive details like your Social Security Number (SSN), driver's license, and banking coordinates during early interview phases, leading to direct identity theft."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a task scam job?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Task scams hire you to click links, optimize ratings, or review hotels on a fake portal. They demand deposits to unlock tasks, then lock your funds and disappear."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do job scammers target remote data entry roles?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Data entry roles are highly popular and require minimal experience. Scammers list fake remote data entry postings to attract high volumes of applicants."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I report fake job postings?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Report the listing to the host job board (LinkedIn, Indeed), file a report at ReportFraud.ftc.gov, or log it on the IC3 registry."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it safe to share my bank account for direct deposit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only provide banking details after verifying corporate credentials, receiving a formal offer letter, and completing standard, authenticated tax verification forms."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an advance-fee employment scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This involves any job setup requiring you to pay training fees, purchase starting materials, or register software under the promise of future paycheck reimbursements."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I verify a job offer letter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Look for generic headers (like Dear Candidate), spelling errors, poor grammar, unverified contact numbers, and formatting discrepancies."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does a real job offer come without an interview?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Valid employers conduct multiple voice or video interviews before presenting an offer. Instant job offers without human contact are scams."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://trustchecker.com/fake-job-offer-checker/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://trustchecker.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Job Scam Checker",
+          "item": "https://trustchecker.com/fake-job-offer-checker"
+        }
+      ]
+    }
+  ]
+};
 ---
 
 <Layout 
-  title="Fake Job Offer Checker - Employment Scam Detection - TrustChecker"
+  title="Fake Job Offer Checker - Verify Employment Legitimacy | TrustChecker"
   description="Audit job postings, recruiter emails, and messaging transcripts for employment scams, fake equipment fees, and money laundering checks. Verify before signing."
   activePath="/fake-job-offer-checker"
 >
-  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
+  <div class="max-w-4xl mx-auto flex flex-col gap-16">
     <!-- Header -->
-    <header class="text-center flex flex-col items-center gap-4 select-none">
+    <header class="text-center flex flex-col items-center gap-4">
       <span class="caption-mono text-link font-semibold">RECRUITMENT AUDIT</span>
-      <h1 class="display-lg text-ink font-semibold">Fake job offer checker.</h1>
+      <h1 class="display-lg text-ink font-semibold">Fake Job Offer Checker</h1>
       <p class="text-sm text-body max-w-lg">
-        Scan job description text, offer letters, or chat logs with recruiters to detect fraudulent job offers.
+        Scan job description details, recruiter communication transcripts, offer letters, or onboarding forms to identify identity-harvesting scams and check-cashing traps in seconds.
       </p>
     </header>
 
     <!-- Checker Dashboard -->
     <InteractiveChecker defaultTab="job" />
 
-    <!-- Educational section -->
-    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
-      <h2 class="display-sm text-ink">Red flags in remote employment offers.</h2>
+    <!-- Detailed Content Architecture Sections -->
+    <article class="flex flex-col gap-12 border-t border-hairline pt-12 text-body">
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-body leading-relaxed">
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">1. Equipments & Check Scam</span>
-          <p>
-            The recruiter promises to send a check for you to purchase a laptop, software, or training tools from a "certified vendor" with a rebate. The check eventually bounces, leaving you liable for thousands of dollars.
-          </p>
-        </div>
+      <!-- Section 1: What is a Job Scam? -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">What is a Job Scam?</h2>
+        <p class="text-sm leading-relaxed">
+          A job scam (or employment scam) is a fraudulent recruitment campaign where bad actors mimic real companies to defraud applicants of money or personal identity records. Scammers post remote-friendly positions such as data entry coordinators, virtual assistants, or package redirectors on reputable job boards (like LinkedIn or Indeed) to target job seekers.
+        </p>
+        <p class="text-sm leading-relaxed">
+          Instead of providing legitimate employment, these schemes focus on capturing financial routing numbers, harvesting personal identification data (SSNs/Driver's Licenses) for bank loan fraud, or tricking applicants into cashing fraudulent checks.
+        </p>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">2. Anonymous Messaging Redirects</span>
-          <p>
-            Scammers avoid interviews or phone calls, insisting on conducting conversations and onboarding entirely through Telegram, WhatsApp, or Signal.
-          </p>
-        </div>
+      <!-- Section 2: How it Works -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">How the Job Scam Checker Works</h2>
+        <p class="text-sm leading-relaxed">
+          The TrustChecker employment analysis engine parses recruiter text logs and letters to cross-reference known threat indicators:
+        </p>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs">
+          <li><strong>Onboarding Communication Protocol Check:</strong> Screens for redirects to personal chat channels (Telegram/WhatsApp) instead of standard corporate tools.</li>
+          <li><strong>Upfront Financial Demands:</strong> Flags keywords indicating payment requests, check deposits, equipment rebates, or software portal registrations.</li>
+          <li><strong>Job Role Classification Audit:</strong> Detects logistics package-forwarding triggers which commonly act as fronts for handling stolen goods.</li>
+          <li><strong>Email Domain Verification:</strong> Flags recruiters writing from public email registries (like Gmail) claiming representation of global brands.</li>
+        </ul>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">3. Unrealistic Pay Scales</span>
-          <p>
-            Offers boasting $60+/hour for simple data entry or package scanning tasks that require no interview or experience are bait for money-laundering mule rings.
-          </p>
+      <!-- Section 3: Red flags in remote employment offers -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink">Red Flags in Remote Employment Offers</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-body leading-relaxed">
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">1. Equipment & Check Scams</span>
+            <p>Recruiters send you a digital check to deposit, instructing you to purchase software or laptops from their approved vendor. The check bounces, leaving you responsible for the loss.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">2. Chat-Only Interviews</span>
+            <p>Legitimate HR departments use video calls or corporate platforms. Scammers insist on text-only communication via Telegram or WhatsApp to remain anonymous.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">3. Inflated Pay & Low Barriers</span>
+            <p>Offers claiming $60+/hour for simple data entry tasks with no prior experience or interviews are bait for money-laundering mule rings.</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Section 4: Real-world Examples -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Real-world Examples of Job Scams</h2>
+        <div class="flex flex-col gap-4 text-xs">
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">The Home Equipment Check Scam</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              An applicant receives a PDF job offer letter claiming to be from a well-known healthcare company. After signing, the recruiter sends a digital image of a $3,500 check, telling them to deposit it and transfer $3,000 to an approved equipment vendor link. The check bounces days later, and the victim loses the $3,000.
+            </p>
+          </div>
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">The WhatsApp Task Scam</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              A victim is contacted via WhatsApp by a recruiter claiming to represent a marketing agency. They are paid $15 to complete simple tasks. They are then invited to deposit cryptocurrency to unlock premium tasks. After depositing $500, the platform locks the account, demanding more funds to withdraw.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Prevention Tips -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Essential Job Security & Prevention Tips</h2>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs text-body leading-relaxed">
+          <li>Always search for the hiring company's official website and reach out to their HR desk directly to verify job openings.</li>
+          <li>Never deposit recruiter checks or transfer funds to secure office equipment or starting software keys.</li>
+          <li>Refuse interviews conducted entirely via messaging apps like WhatsApp, Telegram, or Signal.</li>
+          <li>Audit all recruiter credentials using the TrustChecker verification scanner.</li>
+        </ul>
+      </section>
+
+      <!-- Section 6: FAQ Accordion Section -->
+      <section class="flex flex-col gap-6">
+        <h2 class="display-sm text-ink font-semibold">Frequently Asked Questions</h2>
+        <div class="flex flex-col gap-3">
+          {schemaData["@graph"][1].mainEntity.map((faq) => (
+            <details class="group border border-hairline rounded bg-canvas p-4 transition-all duration-300">
+              <summary class="flex justify-between items-center cursor-pointer font-semibold text-ink text-xs select-none">
+                <span>{faq.name}</span>
+                <span class="text-mute group-open:rotate-180 transition-transform duration-300">↓</span>
+              </summary>
+              <p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">
+                {faq.acceptedAnswer.text}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 7: Internal Linking Map -->
+      <footer class="border-t border-hairline pt-6 mt-6 flex flex-col gap-3">
+        <span class="text-xs font-semibold text-mute">Explore Other Scam Verification Tools:</span>
+        <div class="flex flex-wrap gap-4 text-xs font-medium text-link">
+          <a href="/website-scam-checker" class="hover:underline">Website Safety Checker</a>
+          <span>•</span>
+          <a href="/phishing-email-checker" class="hover:underline">Phish Email Header Checker</a>
+          <span>•</span>
+          <a href="/phone-number-scam-checker" class="hover:underline">Suspicious Call Lookup</a>
+          <span>•</span>
+          <a href="/sms-scam-checker" class="hover:underline">SMS text scam checker</a>
+        </div>
+      </footer>
+
+    </article>
   </div>
 </Layout>

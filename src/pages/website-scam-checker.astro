@@ -1,52 +1,310 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import InteractiveChecker from '../components/InteractiveChecker.astro';
+
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://trustchecker.com/#website",
+      "url": "https://trustchecker.com",
+      "name": "TrustChecker",
+      "description": "AI-powered digital threat detection and scam scanning platform."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://trustchecker.com/website-scam-checker/#software",
+      "name": "Website Scam Checker",
+      "operatingSystem": "All",
+      "applicationCategory": "SecurityApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      },
+      "detail": {
+        "@type": "WebPage",
+        "name": "Website Scam Checker & URL Safety Auditor"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://trustchecker.com/website-scam-checker/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I check if a website is a scam?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Copy the website URL and paste it into the TrustChecker Website Scam Checker. The system analyzes domain age, SSL status, and structural trust signals in real-time to compute a security score."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are the warning signs of a fake website?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Key red flags include a domain registered less than 90 days ago, low-cost registrar extensions (like .xyz or .top), suspicious discounts exceeding 70%, and hidden WHOIS ownership data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is an HTTPS website always safe?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Modern phishing sites routinely utilize free SSL certificates to render HTTPS. HTTPS only means the connection is encrypted, not that the organization is legitimate."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I identify a lookalike domain?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Look closely at the browser address bar for spelling errors, homoglyphs (such as rn replacing m), and excessive hyphens designed to spoof official brands."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is domain registration age and why does it matter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Domain registration age measures how long a domain has been registered. Since fraudulent portals are shut down rapidly, newly registered domains represent a disproportionately high risk."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do scammers use cheap domain extensions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Extensions like .online, .top, or .xyz are cheap to register in bulk. Scammers purchase these in large volumes to set up temporary, disposable scam catalogs."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is WHOIS privacy masking?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "WHOIS privacy masks contact records. While used legitimately for privacy, near-universal masking among scam sites makes it difficult to verify legal corporate ownership."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can a scam website steal my credit card data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Fake shopping catalogs capture card numbers, expiry dates, and CVVs on unsecured or mock payment forms, leading directly to credit card fraud."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are brand impersonation scams?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Brand impersonation is the cloning of legitimate corporate gateways (banks, delivery companies) on lookalike domains to steal login credentials."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I report a scam website?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Report the malicious URL directly to Google Safe Browsing, Microsoft SmartScreen, and the domain registrar's abuse email contact."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is URL redirection abuse?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Redirection abuse uses open-redirect link structures of reputable domains to route users to unauthorized fraudulent pages, tricking initial security filters."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do some scam websites look so professional?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Scammers copy HTML/CSS files from official domains or buy high-quality pre-made eCommerce templates, making replication fast and realistic."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is a domain trust score 100% accurate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No tool guarantees 100% accuracy on brand-new links, but combining technical markers (SSL, TLD, Age) provides a highly reliable risk assessment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a zero-day phishing attack?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Zero-day phishing involves recently registered domains hosting scams that are not yet flagged on popular antivirus database blocklists."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does TrustChecker run dynamic scans?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. TrustChecker evaluates URLs dynamically utilizing server-side analysis blocks combined with real-time heuristic validation."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://trustchecker.com/website-scam-checker/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://trustchecker.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Website Scam Checker",
+          "item": "https://trustchecker.com/website-scam-checker"
+        }
+      ]
+    }
+  ]
+};
 ---
 
 <Layout 
-  title="Website Scam Checker - Search Domain Safety - TrustChecker"
-  description="Instantly scan any web URL or link for phishing clones, fake storefronts, and domain registration age threats. Run a free domain verification."
+  title="Website Scam Checker - Check If Website is Legit | TrustChecker"
+  description="Check if a website is legit or a scam instantly. Run a free safety audit for domain registration age, SSL security, and reputational trust score."
   activePath="/website-scam-checker"
 >
-  <div class="max-w-4xl mx-auto flex flex-col gap-10">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
+  <div class="max-w-4xl mx-auto flex flex-col gap-16">
     <!-- Header -->
-    <header class="text-center flex flex-col items-center gap-4 select-none">
+    <header class="text-center flex flex-col items-center gap-4">
       <span class="caption-mono text-link font-semibold">SECURITY AUDIT</span>
-      <h1 class="display-lg text-ink font-semibold">Website scam checker.</h1>
+      <h1 class="display-lg text-ink font-semibold">Website Scam Checker</h1>
       <p class="text-sm text-body max-w-lg">
-        Audit any URL for potential malware, lookalike domain spoofing, and malicious scripts before visiting or sharing.
+        Audit any URL for potential phishing clones, fraudulent eCommerce platforms, lookalike brand redirects, and domain registration anomalies in real-time.
       </p>
     </header>
 
     <!-- Checker Dashboard -->
     <InteractiveChecker defaultTab="url" />
 
-    <!-- Educational content -->
-    <section class="border-t border-hairline pt-10 select-none flex flex-col gap-6">
-      <h2 class="display-sm text-ink">Understanding domain warning signs.</h2>
+    <!-- Detailed Content Architecture Sections (Topical Authority, EEAT, NLP Keywords) -->
+    <article class="flex flex-col gap-12 border-t border-hairline pt-12 text-body">
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-body leading-relaxed">
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">1. Newly Created Domain</span>
-          <p>
-            Scammers continuously register and discard domains. If a website has been registered for less than 90 days, it is highly likely to be a scam campaign.
-          </p>
-        </div>
+      <!-- Section 1: What is a Website Scam? -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">What is a Website Scam?</h2>
+        <p class="text-sm leading-relaxed">
+          A website scam is a deceptive web portal constructed by cybercriminals to mimic trustworthy businesses, financial portals, or retail brands. These copycat setups aim to extract sensitive digital inputs from unsuspecting visitors. Scammers utilize sophisticated cloning tools to replicate the appearance, stylesheets, and assets of official services, rendering manual checks difficult.
+        </p>
+        <p class="text-sm leading-relaxed">
+          Common types include fake online clearance stores offering non-existent inventory at heavy discounts, duplicate banking login forms seeking user credentials, and support verification pages linked in sms package alerts.
+        </p>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">2. High-Discount eCommerce Bait</span>
-          <p>
-            Be suspicious of online shops using suspicious extensions (like `.xyz` or `.shop`) selling premium electronics or designer clothes at 70%+ off.
-          </p>
-        </div>
+      <!-- Section 2: How it Works -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">How Our Website Scam Checker Works</h2>
+        <p class="text-sm leading-relaxed">
+          The TrustChecker verification engine evaluates domains across critical reputation metrics:
+        </p>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs">
+          <li><strong>Domain Registration Age Audit:</strong> Checks the domain's registry record. If a site is younger than 90 days, it is flagged as high-risk.</li>
+          <li><strong>SSL Certificate Verification:</strong> Ensures the connection uses secure, authenticated TLS protocols.</li>
+          <li><strong>TLD Reputation Inspection:</strong> Identifies low-cost, low-verification domain extension groups (.top, .xyz, etc.) heavily targeted by spam networks.</li>
+          <li><strong>Brand Impersonation Segmenting:</strong> Identifies spelling lookalikes, homoglyphs, and unauthorized use of trademarked names in domain structures.</li>
+        </ul>
+      </section>
 
-        <div class="flex flex-col gap-2 p-4 bg-canvas border border-hairline rounded shadow-level1">
-          <span class="font-semibold text-error">3. Hidden Registrar Data</span>
-          <p>
-            Legitimate business entities share public corporate DNS records. Malicious actors hide contact data behind anonymous proxy services.
-          </p>
+      <!-- Section 3: Common Scam Signs -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Common Signs of a Scam Website</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-body leading-relaxed">
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">1. Newly Created Domain</span>
+            <p>Scammers register throwaway domains to launch brief campaigns before blacklists catch them. Check WHOIS records for young domain lifespans.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">2. Suspicious Pricing & Extensions</span>
+            <p>Clearance sites using cheap extensions (.vip, .shop) selling premium electronics at huge discounts (80% off) are catalog traps.</p>
+          </div>
+          <div class="flex flex-col gap-2 p-5 bg-canvas border border-hairline rounded shadow-level1">
+            <span class="font-semibold text-error text-sm">3. Hidden Corporate Ownership</span>
+            <p>Legitimate organizations publish verifiable contact information. Fraudulent networks hide completely behind WHOIS proxy services.</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Section 4: Real Examples -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Real-world Examples of Website Scams</h2>
+        <div class="flex flex-col gap-4 text-xs">
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">USPS Parcel Delivery Smishing Link</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              Victims receive a SMS text stating their parcel delivery failed due to incorrect address data. The message contains a link like <code>usps-address-redirection.info</code>. Tapping it leads to a lookalike USPS tracking console requesting a small fee to re-route coordinates, stealing payment cards.
+            </p>
+          </div>
+          <div class="p-4 rounded border border-hairline bg-canvas-soft-2">
+            <h3 class="font-semibold text-ink text-sm">Cloned Bank Security Alert</h3>
+            <p class="mt-1 leading-relaxed text-body">
+              An email claiming to be from Chase or Bank of America states unauthorized login attempts occurred on your dashboard. It demands immediate verification via a link routing to <code>verify-bankofamerica.online</code>. It logs credentials, passwords, and security verification codes.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Prevention Tips -->
+      <section class="flex flex-col gap-4">
+        <h2 class="display-sm text-ink font-semibold">Essential Website Security & Prevention Tips</h2>
+        <ul class="list-disc pl-6 flex flex-col gap-2.5 text-xs text-body leading-relaxed">
+          <li>Never click links inside cold email notifications or SMS texts. Browse directly to the brand's verified application.</li>
+          <li>Look for spelling errors in the browser address bar. Lookalike characters are easily missed on small mobile screen layouts.</li>
+          <li>Verify trust status by searching for customer reviews on neutral platforms before checking out items.</li>
+          <li>Utilize TrustChecker to verify domain registration details and secure server trust certificates in seconds.</li>
+        </ul>
+      </section>
+
+      <!-- Section 6: FAQ Accordion Section (15 FAQs) -->
+      <section class="flex flex-col gap-6">
+        <h2 class="display-sm text-ink font-semibold">Frequently Asked Questions</h2>
+        <div class="flex flex-col gap-3">
+          {schemaData["@graph"][2].mainEntity.map((faq) => (
+            <details class="group border border-hairline rounded bg-canvas p-4 transition-all duration-300">
+              <summary class="flex justify-between items-center cursor-pointer font-semibold text-ink text-xs select-none">
+                <span>{faq.name}</span>
+                <span class="text-mute group-open:rotate-180 transition-transform duration-300">↓</span>
+              </summary>
+              <p class="mt-3 text-xs leading-relaxed text-body border-t border-hairline pt-3">
+                {faq.acceptedAnswer.text}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 7: Internal Linking Map -->
+      <footer class="border-t border-hairline pt-6 mt-6 flex flex-col gap-3">
+        <span class="text-xs font-semibold text-mute">Explore Other Scam Verification Tools:</span>
+        <div class="flex flex-wrap gap-4 text-xs font-medium text-link">
+          <a href="/fake-job-offer-checker" class="hover:underline">Job Offer Legitimacy Checker</a>
+          <span>•</span>
+          <a href="/phishing-email-checker" class="hover:underline">Phish Email Header Checker</a>
+          <span>•</span>
+          <a href="/phone-number-scam-checker" class="hover:underline">Suspicious Call Lookup</a>
+          <span>•</span>
+          <a href="/online-store-checker" class="hover:underline">Online Store trust checker</a>
+        </div>
+      </footer>
+      
+    </article>
   </div>
 </Layout>

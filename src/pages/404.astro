@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="404 - Page Not Found | TrustChecker"
+  description="The page you requested could not be found. Return to the TrustChecker dashboard to scan links, emails, and phone numbers."
+>
+  <meta slot="head" name="robots" content="noindex, nofollow" />
+
+  <div class="max-w-xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh] gap-6">
+    <!-- Icon/Graphic -->
+    <div class="relative w-24 h-24 mb-2 flex items-center justify-center rounded-full bg-error/10 border border-error/20 text-error animate-pulse">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+      <!-- Absolute accent blur -->
+      <div class="absolute inset-0 bg-error/20 rounded-full filter blur-xl -z-10"></div>
+    </div>
+
+    <!-- Error Codes -->
+    <div class="flex flex-col gap-2 select-none">
+      <span class="text-xs font-mono font-bold tracking-widest text-error uppercase">ERROR CODE 404</span>
+      <h1 class="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-ink via-mute to-error bg-clip-text text-transparent">Page Not Found</h1>
+    </div>
+
+    <!-- Explanation -->
+    <p class="text-sm text-body leading-relaxed max-w-md">
+      The safety audit target or page URL you requested does not exist, has been permanently removed, or is temporarily offline.
+    </p>
+
+    <!-- Navigation Helpers (Topical Directory) -->
+    <div class="w-full flex flex-col gap-3 mt-4">
+      <span class="text-xs font-mono font-semibold text-mute uppercase select-none">Quick Scanner Access</span>
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <a href="/website-scam-checker" class="flex items-center justify-center p-3 rounded border border-hairline bg-canvas hover:border-link hover:text-link transition-all duration-300">
+          <span>Website Checker</span>
+        </a>
+        <a href="/phishing-email-checker" class="flex items-center justify-center p-3 rounded border border-hairline bg-canvas hover:border-link hover:text-link transition-all duration-300">
+          <span>Email Checker</span>
+        </a>
+        <a href="/phone-number-scam-checker" class="flex items-center justify-center p-3 rounded border border-hairline bg-canvas hover:border-link hover:text-link transition-all duration-300">
+          <span>Phone Checker</span>
+        </a>
+        <a href="/fake-job-offer-checker" class="flex items-center justify-center p-3 rounded border border-hairline bg-canvas hover:border-link hover:text-link transition-all duration-300">
+          <span>Job Offer Checker</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Return Action -->
+    <a href="/" class="mt-4 px-6 py-2.5 rounded bg-ink text-canvas hover:bg-mute font-semibold text-xs tracking-wider transition-all duration-300 shadow-level1">
+      RETURN TO DASHBOARD
+    </a>
+  </div>
+</Layout>
