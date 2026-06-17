@@ -15,7 +15,9 @@
     "@astrojs/cloudflare": "^13.7.0",
     "@astrojs/sitemap": "^3.7.3",
     "@astrojs/vercel": "^10.0.8",
+    "@tailwindcss/node": "^4.3.1",
     "astro": "^6.4.6",
+    "lightningcss": "^1.32.0",
     "tailwindcss": "^4.3.1"
   },
   "mcpServers": {
