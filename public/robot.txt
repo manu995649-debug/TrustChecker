@@ -8,4 +8,4 @@ Disallow: /500
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://trustchecker.com/sitemap-index.xml
+Sitemap: https://trytrustchecker.com/sitemap-index.xml

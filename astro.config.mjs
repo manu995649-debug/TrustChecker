@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://trustchecker.com',
+  site: 'https://trytrustchecker.com',
   integrations: [sitemap()],
   adapter: cloudflare(),
 });
