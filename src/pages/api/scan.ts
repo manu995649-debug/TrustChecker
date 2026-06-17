@@ -32,7 +32,7 @@ interface DetailedAnalysisResult {
   simpleExplanation: string;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // 1. Parse and validate input params
     const body = await request.json();
@@ -46,7 +46,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // 2. Fetch API key from server environment
-    const apiKey = import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    const cloudflareEnv = (locals as any).runtime?.env;
+    const apiKey = cloudflareEnv?.GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.error('Server Configuration Error: GEMINI_API_KEY is not defined in the server environment.');
       return new Response(JSON.stringify({ error: 'Server configuration error: Threat scan API key is not configured.' }), {
