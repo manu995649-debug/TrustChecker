@@ -1,0 +1,10 @@
+{
+  "name": "trustchecker",
+  "compatibility_date": "2026-04-15",
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "5cdd90019ec4496cb40e50ba580b824c"
+    }
+  ]
+}
