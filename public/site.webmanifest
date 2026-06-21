@@ -1,6 +1,6 @@
 {
   "name": "TrustChecker",
-  "short_name": "Trust Checker",
+  "short_name": "TrustChecker",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
